@@ -1,0 +1,87 @@
+﻿<UserControl x:Class="CajaDeBateo.ControlDeUsuarios.CargarCreditosAdicionales"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CajaDeBateo.ControlDeUsuarios"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="85*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="5*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid x:Name="ContCantidadCargarCreditosAdicionales" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"/>
+            <TextBlock Grid.Row="1" HorizontalAlignment="Center" FontFamily="Showcard Gothic" 
+                       FontSize="20">Recarga de Créditos</TextBlock>
+            <TextBlock Grid.Row="2" HorizontalAlignment="Center" FontFamily="Showcard Gothic" 
+                       FontSize="20">Adicionales</TextBlock>
+            <TextBlock Grid.Row="3"/>
+            <TextBlock Grid.Row="4" HorizontalAlignment="Left" FontFamily="Showcard Gothic" 
+                       FontSize="16" Margin="15,0,0,0" 
+                       VerticalAlignment="Bottom">ID Usuario:</TextBlock>
+            <Label Grid.Row="5" x:Name="IDUusuarioCargarCreditosAdicionales" 
+                   HorizontalAlignment="Center" FontFamily="Showcard Gothic" FontSize="14" 
+                   Content="ID" VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="6" HorizontalAlignment="Left" FontFamily="Showcard Gothic" 
+                       FontSize="16" Margin="15,0,0,0" 
+                       VerticalAlignment="Bottom">Ingrese la cantidad a recargar:</TextBlock>
+            <TextBox Grid.Row="7" x:Name="CantidadCreditosAdicionales"  Height="23" 
+                     FontFamily="Showcard Gothic" FontSize="14" TextWrapping="Wrap" Width="250" 
+                     VerticalAlignment="Center" HorizontalAlignment="Center" 
+                     TextChanged="CantidadCreditosAdicionales_TextChanged"/>
+            <TextBlock Grid.Row="8"/>
+        </Grid>
+        <Grid x:Name="ContBotonesCargarCreditosAdicionales" HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch" 
+              Margin="0,0,0,0" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="15*"/>
+                <ColumnDefinition Width="30*"/>
+                <ColumnDefinition Width="15*"/>
+                <ColumnDefinition Width="30*"/>
+                <ColumnDefinition Width="15*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="BtnCancelarCargarCreditosAdicionales" HorizontalAlignment="Stretch"
+                    Margin="0,0,0,0" VerticalAlignment="Stretch" FontFamily="Showcard Gothic"
+                    FontSize="16" Grid.Column="1" Click="BtnCancelarCreditosAdicionales_Click">
+                <StackPanel>
+                    <!--><Image Source="Imagenes/Tarjetas.png" Width="38"/>-->
+                    <TextBlock>Cancelar</TextBlock>
+                </StackPanel>
+            </Button>
+            <Button x:Name="BtnGuardarCargarCreditosAdicionales" HorizontalAlignment="Stretch" 
+                    Margin="0,0,0,0" VerticalAlignment="Stretch" FontFamily="Showcard Gothic" 
+                    FontSize="16" Grid.Column="3" IsEnabled="False" Click="BtnGuardarCargarCreditosAdicionales_Click" >
+                <StackPanel>
+                    <!--><Image Source="Imagenes/Tarjetas.png" Width="38"/>-->
+                    <TextBlock>Guardar</TextBlock>
+                </StackPanel>
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>
