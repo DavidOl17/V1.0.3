@@ -65,6 +65,9 @@
     <Compile Include="ControlDeUsuarios\CargarCreditosMensuales.xaml.cs">
       <DependentUpon>CargarCreditosMensuales.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ControlDeUsuarios\Configuracion.xaml.cs">
+      <DependentUpon>Configuracion.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ControlDeUsuarios\CrearTarjeta.xaml.cs">
       <DependentUpon>CrearTarjeta.xaml</DependentUpon>
     </Compile>
@@ -82,6 +85,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ControlDeUsuarios\CargarCreditosMensuales.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ControlDeUsuarios\Configuracion.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

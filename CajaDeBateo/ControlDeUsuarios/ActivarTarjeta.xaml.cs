@@ -15,7 +15,7 @@ namespace CajaDeBateo.ControlDeUsuarios
         //string info;
         Label aux;
         bool primera = false;
-        public ActivarTarjeta(int puerto, string[] puertos, MainWindow Win)
+        public ActivarTarjeta(int puerto, string[] puertos)
         {
             InitializeComponent();
             try
@@ -44,9 +44,7 @@ namespace CajaDeBateo.ControlDeUsuarios
             }
             catch (NullReferenceException e)
             {
-                String Mensaje = "Conexión a Lector/Escritor no detectada. " + e.Message;
-                MessageBox.Show(Mensaje, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                //Win.RegresarPantallaInicial();
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             this.IsVisibleChanged += ActivarTarjeta_IsVisibleChanged;
         }
@@ -56,7 +54,16 @@ namespace CajaDeBateo.ControlDeUsuarios
             if (!primera)
                 primera = true;
             else
-                arduino.CerrarComunicacion();
+            {
+                try
+                {
+                    arduino.CerrarComunicacion();
+                }
+                catch(NullReferenceException ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         string data;

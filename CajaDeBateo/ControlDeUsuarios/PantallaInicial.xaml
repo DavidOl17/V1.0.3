@@ -6,8 +6,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CajaDeBateo.ControlDeUsuarios"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300"
+             d:DesignWidth="300">
     <Grid Background="AntiqueWhite">
-        <Label x:Name="lblDato" Foreground="LightGray" Content="Bienvenido" HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontFamily="Viner Hand ITC" FontSize="36"/>
+        <Label x:Name="lblDato"
+               Foreground="Brown"
+               Content="Bienvenido"
+               HorizontalAlignment="Center"
+               Margin="0,0,0,0"
+               VerticalAlignment="Center"
+               HorizontalContentAlignment="Center"
+               VerticalContentAlignment="Center"
+               FontFamily="Viner Hand ITC"
+               FontSize="36"/>
     </Grid>
 </UserControl>

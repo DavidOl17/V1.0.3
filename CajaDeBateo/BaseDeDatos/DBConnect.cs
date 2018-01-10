@@ -280,6 +280,10 @@ namespace CajaDeBateo.BaseDeDatos
             {
                 MessageBox.Show("Error , unable to backup!" + ex.Message);
             }
+            catch(System.ComponentModel.Win32Exception e)
+            {
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         //Restore

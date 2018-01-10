@@ -13,7 +13,7 @@ namespace CajaDeBateo.ControlDeUsuarios
         ArduinoComunication arduino;
         //string info;
         Label aux;
-        public DesactivarTarjeta(ref ArduinoComunication arduino, MainWindow Win)
+        public DesactivarTarjeta(ref ArduinoComunication arduino)
         {
             InitializeComponent();
             this.arduino = arduino;
@@ -29,7 +29,6 @@ namespace CajaDeBateo.ControlDeUsuarios
             {
                 String Mensaje = "Conexión a Lector/Escritor no detectada. " + e.Message;
                 MessageBox.Show(Mensaje, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                //Win.RegresarPantallaInicial();
             }
         }
         string data;

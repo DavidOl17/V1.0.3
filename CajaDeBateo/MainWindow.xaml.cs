@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace CajaDeBateo
 {
@@ -31,7 +32,9 @@ namespace CajaDeBateo
         private Control controlDeVista;
         int puertoSeleccionado;
         string[] puertos;
-        MainWindow Win = null;
+        private int CreditosMensuales;
+        private int CreditosMensualesPorDefecto = 15;
+        private String ConfigPath;
 
         private void Reset(object sender, KeyEventArgs e)
         {
@@ -62,9 +65,53 @@ namespace CajaDeBateo
             puertoSeleccionado = sA.Index;
             puertos = sA.EP;
             //ardC.RespuestaRecivida += new EventHandler(Recepcion);
-            
-            
+            //String Path = System.Reflection.Assembly.GetExecutingAssembly().Location + "\\Config";
+            ConfigPath = AppDomain.CurrentDomain.BaseDirectory;
+            ConfigPath.Substring(0, ConfigPath.LastIndexOf("\\"));
+            ConfigPath = ConfigPath + "Config";
+            bool LecturaCorrecta = true;
+            if(File.Exists(ConfigPath))
+            {
+                StreamReader In = new StreamReader(ConfigPath);
+                String Cad = In.ReadLine();
+                String[] Valores = Cad.Split(new char[] { '=' });
+                if (Valores.Count() == 2)
+                {
+                    int Valor = -1;
+                    if (Valores[0] == "CreditosMensuales" && int.TryParse(Valores[1], out Valor))
+                    {
+                        CreditosMensuales = Valor;
+                    }
+                    else
+                    {
+                        LecturaCorrecta = false;
+                    }
+                }
+                else
+                {
+                    LecturaCorrecta = false;
+                }
+                In.Close();
+            }
+            else
+            {
+                LecturaCorrecta = false;
+            }
+
+            if(!LecturaCorrecta)
+            {
+                if (File.Exists(ConfigPath))
+                {
+                    File.Delete(ConfigPath);
+                }
+                StreamWriter Out = new StreamWriter(ConfigPath);
+                Out.WriteLine("CreditosMensuales=" + CreditosMensualesPorDefecto.ToString());
+                Out.Close();
+                CreditosMensuales = CreditosMensualesPorDefecto;
+            }
         }
+
+        
 
         //private void Recepcion(object sender, EventArgs e)
         //{
@@ -151,20 +198,17 @@ namespace CajaDeBateo
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
                     GC.Collect();
-                    Win = (MainWindow)Window.GetWindow(this);
-                    controlDeVista = new CrearTarjeta(puertoSeleccionado,puertos, Win);
+                    controlDeVista = new CrearTarjeta(puertoSeleccionado,puertos);
                     stkUSerControlContainer.Children.Add(controlDeVista);
                     break;
                 case "btnActivar":
                     stkUSerControlContainer.Children.Remove(controlDeVista);
-                    Win = (MainWindow)Window.GetWindow(this);
-                    controlDeVista = new ActivarTarjeta(puertoSeleccionado,puertos, Win);
+                    controlDeVista = new ActivarTarjeta(puertoSeleccionado,puertos);
                     stkUSerControlContainer.Children.Add(controlDeVista);
                     break;
                 case "btnDesactivar":
                     //stkUSerControlContainer.Children.Remove(controlDeVista);
-                    //Win = (MainWindow)Window.GetWindow(this);
-                    //controlDeVista = new DesactivarTarjeta(ref ardC, Win);
+                    //controlDeVista = new DesactivarTarjeta(ref ardC);
                     //stkUSerControlContainer.Children.Add(controlDeVista);
                     break;
                 case "btnAgregarMensual":
@@ -180,8 +224,12 @@ namespace CajaDeBateo
                 case "btnRespaldoBD":
                     DBConnect.Backup();
                     break;
+                case "btnConfigurarCreditosMensuales":
+                    stkUSerControlContainer.Children.Remove(controlDeVista);
+                    controlDeVista = new Configuracion(CreditosMensuales, ConfigPath);
+                    stkUSerControlContainer.Children.Add(controlDeVista);
+                    break;
             }
-            Win = null;
         }
     }
 }

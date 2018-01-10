@@ -33,7 +33,7 @@ namespace CajaDeBateo.ControlDeUsuarios
         bool guardado = false;
         DBConnect baseDeDatos;
         bool primera = false;
-        public CrearTarjeta(int puerto, string[] puertos, MainWindow Win)
+        public CrearTarjeta(int puerto, string[] puertos)
         {
             InitializeComponent();
             escribirID = false;
@@ -61,9 +61,7 @@ namespace CajaDeBateo.ControlDeUsuarios
             }
             catch (NullReferenceException e)
             {
-                String Mensaje = "Conexión a Lector/Escritor no detectada. " + e.Message;
-                MessageBox.Show(Mensaje, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                Win.RegresarPantallaInicial();
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -74,7 +72,16 @@ namespace CajaDeBateo.ControlDeUsuarios
                 primera = true;
             }
             else
-                arduino.CerrarComunicacion();
+            {
+                try
+                {
+                    arduino.CerrarComunicacion();
+                }
+                catch(NullReferenceException ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         private void Read(object sender, EventArgs e)

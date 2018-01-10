@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CajaDeBateo.ControlDeUsuarios"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300"
+             d:DesignWidth="300">
     <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="85*"/>
@@ -15,8 +16,11 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Grid x:Name="ContDatosCrearTarjeta" HorizontalAlignment="Stretch" 
-              VerticalAlignment="Stretch" Margin="0,0,0,0" Grid.Row="0">
+        <Grid Grid.Row="0"
+              x:Name="ContDatosCrearTarjeta"
+              HorizontalAlignment="Stretch" 
+              VerticalAlignment="Stretch"
+              Margin="0,0,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
@@ -32,24 +36,41 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0"/>
-            <TextBlock Grid.Row="1" HorizontalAlignment="Center" FontFamily="Showcard Gothic" 
+            <TextBlock Grid.Row="1"
+                       HorizontalAlignment="Center"
+                       FontFamily="Showcard Gothic" 
                        FontSize="20">Creación de Tarjeta</TextBlock>
-            <TextBlock Grid.Row="2" HorizontalAlignment="Center" FontFamily="Showcard Gothic" 
+            <TextBlock Grid.Row="2"
+                       HorizontalAlignment="Center"
+                       FontFamily="Showcard Gothic" 
                        FontSize="20">De Usuario</TextBlock>
             <TextBlock Grid.Row="3"/>
-            <TextBlock x:Name="tbkID" Grid.Row="4" HorizontalAlignment="Left" FontFamily="Showcard Gothic" 
-                       FontSize="16" Margin="15,0,0,0"
+            <TextBlock Grid.Row="4"
+                       x:Name="tbkID"
+                       HorizontalAlignment="Left"
+                       FontFamily="Showcard Gothic" 
+                       FontSize="16"
+                       Margin="15,0,0,0"
                        VerticalAlignment="Bottom">ID Usuario:</TextBlock>
-            <Label Grid.Row="5" x:Name="lblDato" HorizontalAlignment="Center" 
-                   FontFamily="Showcard Gothic" FontSize="14" Content="" 
+            <Label Grid.Row="5"
+                   x:Name="lblDato"
+                   HorizontalAlignment="Center" 
+                   FontFamily="Showcard Gothic"
+                   FontSize="14"
+                   Content="" 
                    VerticalAlignment="Center"/>
-            <TextBlock Grid.Row="6" HorizontalAlignment="Center" FontFamily="Showcard Gothic" 
-                       FontSize="16" VerticalAlignment="Center">¿Crear Tarjeta?</TextBlock>
+            <TextBlock Grid.Row="6"
+                       HorizontalAlignment="Center"
+                       FontFamily="Showcard Gothic" 
+                       FontSize="16"
+                       VerticalAlignment="Center">¿Crear Tarjeta?</TextBlock>
             <TextBlock Grid.Row="7"/>
         </Grid>
-        <Grid x:Name="ContBotonesCrearTarjeta" HorizontalAlignment="Stretch"
+        <Grid Grid.Row="1"
+              x:Name="ContBotonesCrearTarjeta"
+              HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch" 
-              Margin="0,0,0,0" Grid.Row="1">
+              Margin="0,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30*"/>
             </Grid.RowDefinitions>
@@ -61,17 +82,27 @@
                 <ColumnDefinition Width="15*"/>
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="BtnCancelarCrearTarjeta" HorizontalAlignment="Stretch" 
-                    Margin="0,0,0,0" VerticalAlignment="Stretch" FontFamily="Showcard Gothic" 
-                    FontSize="16" Grid.Column="1" Click="BtnCancelarCrearTarjeta_Click">
+            <Button Grid.Column="1"
+                    x:Name="BtnCancelarCrearTarjeta"
+                    HorizontalAlignment="Stretch" 
+                    Margin="0,0,0,0"
+                    VerticalAlignment="Stretch"
+                    FontFamily="Showcard Gothic" 
+                    FontSize="16"
+                    Click="BtnCancelarCrearTarjeta_Click">
                 <StackPanel>
                     <!--><Image Source="Imagenes/Tarjetas.png" Width="38"/>-->
                     <TextBlock>Cancelar</TextBlock>
                 </StackPanel>
             </Button>
-            <Button x:Name="BtnActivarCrearTarjeta" HorizontalAlignment="Stretch" 
-                    Margin="0,0,0,0" VerticalAlignment="Stretch" FontFamily="Showcard Gothic" 
-                    FontSize="16" Grid.Column="3" Click="click_crarTarjeta">
+            <Button Grid.Column="3"
+                    x:Name="BtnActivarCrearTarjeta"
+                    HorizontalAlignment="Stretch" 
+                    Margin="0,0,0,0"
+                    VerticalAlignment="Stretch"
+                    FontFamily="Showcard Gothic" 
+                    FontSize="16"
+                    Click="click_crarTarjeta">
                 <StackPanel>
                     <!--><Image Source="Imagenes/Tarjetas.png" Width="38"/>-->
                     <TextBlock>Crear</TextBlock>
