@@ -38,31 +38,26 @@ namespace CajaDeBateo.ControlDeUsuarios
             InitializeComponent();
             escribirID = false;
             leer = false;
-            this.IsVisibleChanged += CrearTarjeta_IsVisibleChanged;
             baseDeDatos = new DBConnect();
             //arduino.Reset();
             try
             {
                 arduino = new ArduinoComunication(puerto, puertos);
-            }
-            catch (SensorNotFoundExceptio e)
-            {
-                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (Exception a)
-            {
-                MessageBox.Show(a.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            try
-            {
                 arduino.RespuestaRecivida += new EventHandler(Read);
                 //id = random.Next(0, 50000);
                 Inicia();
             }
+            catch (SensorNotFoundExceptio e)
+            {
+                MessageBox.Show("Error. Conección con lectora/escritora no encontrada." + e.Message,
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             catch (NullReferenceException e)
             {
-                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error. Conección con lectora/escritora no encontrada." + e.Message,
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            this.IsVisibleChanged += CrearTarjeta_IsVisibleChanged;
         }
 
         private void CrearTarjeta_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -77,9 +72,9 @@ namespace CajaDeBateo.ControlDeUsuarios
                 {
                     arduino.CerrarComunicacion();
                 }
-                catch(NullReferenceException ex)
+                catch (NullReferenceException ex)
                 {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    String Val = ex.Message;
                 }
             }
         }
@@ -123,9 +118,17 @@ namespace CajaDeBateo.ControlDeUsuarios
         }
         private void TransfeririInfoATarjeta()
         {
-            Thread.Sleep(1300);
-            BtnActivarCrearTarjeta.IsEnabled = false;
-            arduino.Write("1");
+            try
+            {
+                Thread.Sleep(1300);
+                BtnActivarCrearTarjeta.IsEnabled = false;
+                arduino.Write("1");
+            }
+            catch (NullReferenceException e)
+            {
+                MessageBox.Show("Error. Conección con lectora/escritora no encontrada." + e.Message,
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         void Inicia()
         {

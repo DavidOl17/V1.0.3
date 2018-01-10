@@ -37,30 +37,19 @@ namespace CajaDeBateo.ControlDeUsuarios
             try
             {
                 arduino = new ArduinoComunication(puerto, puertos);
-            }
-            catch (SensorNotFoundExceptio e)
-            {
-                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (Exception a)
-            {
-                MessageBox.Show(a.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                Thread.Sleep(1500);
-            }
-            try
-            {
                 arduino.RespuestaRecivida += new EventHandler(Read);
                 arduino.Write("2");
                 IDUusuarioCargarCreditosAdicionales.Content = "Pase la tarjeta";
             }
+            catch (SensorNotFoundExceptio e)
+            {
+                MessageBox.Show("Error. Conección con lectora/escritora no encontrada." + e.Message,
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             catch (NullReferenceException e)
             {
-                String Mensaje = "Conexión a Lector/Escritor no detectada. " + e.Message;
-                MessageBox.Show(Mensaje, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                //Win.RegresarPantallaInicial();
+                MessageBox.Show("Error. Conección con lectora/escritora no encontrada." + e.Message,
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             this.IsVisibleChanged += ActivarTarjeta_IsVisibleChanged;
         }
@@ -77,7 +66,14 @@ namespace CajaDeBateo.ControlDeUsuarios
             if (!primera)
                 primera = true;
             else
-                arduino.CerrarComunicacion();
+                try
+                {
+                    arduino.CerrarComunicacion();
+                }
+                catch (NullReferenceException ex)
+                {
+                    String Val = ex.Message;
+                }
         }
 
         private void BtnCancelarCreditosAdicionales_Click(object sender, RoutedEventArgs e)

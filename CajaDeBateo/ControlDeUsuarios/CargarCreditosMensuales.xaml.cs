@@ -27,40 +27,32 @@ namespace CajaDeBateo.ControlDeUsuarios
         bool primera = false;
         DBConnect baseDeDatos;
         int id;
-        public CargarCreditosMensuales(int puerto, string[] puertos)
+        private int CreditosMensuales;
+
+        public CargarCreditosMensuales(int puerto, string[] puertos, int ValCreditosMensuales)
         {
             InitializeComponent();
+            CreditosMensuales = ValCreditosMensuales;
             baseDeDatos = new DBConnect();
             BtnGuardarCargarCreditosMensuales.IsEnabled = false;
             try
             {
                 arduino = new ArduinoComunication(puerto, puertos);
-            }
-            catch (SensorNotFoundExceptio e)
-            {
-                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (Exception a)
-            {
-                MessageBox.Show(a.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                Thread.Sleep(1500);
-            }
-            //arduino.Reset();
-            try
-            {
                 arduino.RespuestaRecivida += new EventHandler(Read);
                 arduino.Write("2");
                 IDUusuarioCargarCreditosMensuales.Content = "Pase la tarjeta";
             }
+            catch (SensorNotFoundExceptio e)
+            {
+                MessageBox.Show("Error. Conección con lectora/escritora no encontrada." + e.Message,
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             catch (NullReferenceException e)
             {
-                String Mensaje = "Conexión a Lector/Escritor no detectada. " + e.Message;
-                MessageBox.Show(Mensaje, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                //Win.RegresarPantallaInicial();
+                MessageBox.Show("Error. Conección con lectora/escritora no encontrada." + e.Message,
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            //arduino.Reset();
             this.IsVisibleChanged += ActivarTarjeta_IsVisibleChanged;
         }
 
@@ -69,7 +61,16 @@ namespace CajaDeBateo.ControlDeUsuarios
             if (!primera)
                 primera = true;
             else
-                arduino.CerrarComunicacion();
+            {
+                try
+                {
+                    arduino.CerrarComunicacion();
+                }
+                catch (NullReferenceException ex)
+                {
+                    String Val = ex.Message;
+                }
+            }
         }
 
         private void Read(object sender, EventArgs e)
@@ -89,7 +90,7 @@ namespace CajaDeBateo.ControlDeUsuarios
 
         private void click_Guardar(object sender, RoutedEventArgs e)
         {
-            if(baseDeDatos.AgregarCreditoMensual(id.ToString()))
+            if(baseDeDatos.AgregarCreditoMensual(id.ToString(), CreditosMensuales))
             {
                 MessageBox.Show("Creditos agregados", "Succes", MessageBoxButton.OK, MessageBoxImage.Information);
                 
@@ -97,9 +98,14 @@ namespace CajaDeBateo.ControlDeUsuarios
             IDUusuarioCargarCreditosMensuales.Content = "Pase la tarjeta";
             BtnGuardarCargarCreditosMensuales.IsEnabled = false;
             tbkIDUsuarios.Text = "ID Usuarios: ";
-            arduino.Write("2");
-
-
+            try
+            {
+                arduino.Write("2");
+            }
+            catch(NullReferenceException ex)
+            {
+                String Val = ex.Message;
+            }
         }
     }
 }

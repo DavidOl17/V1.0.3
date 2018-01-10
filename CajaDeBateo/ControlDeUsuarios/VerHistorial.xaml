@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="CajaDeBateo.ControlDeUsuarios.DesactivarTarjeta"
+﻿<UserControl x:Class="CajaDeBateo.ControlDeUsuarios.VerHistorial"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -16,34 +16,34 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Grid Grid.Row="0"
-              x:Name="ContDatosDesactivarTarjeta"
+        <Grid x:Name="ContDatosVerHistorial"
               HorizontalAlignment="Stretch" 
               VerticalAlignment="Stretch"
-              Margin="0,0,0,0">
+              Margin="0,0,0,0" 
+              Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="50"/>
+                <RowDefinition Height="25"/>
                 <RowDefinition Height="25"/>
                 <RowDefinition Height="25"/>
                 <RowDefinition Height="2*"/>
                 <RowDefinition Height="20"/>
-                <RowDefinition Height="50"/>
-                <RowDefinition Height="50"/>
+                <RowDefinition Height="25"/>
+                <RowDefinition Height="80*"/>
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0"/>
-            <TextBlock Grid.Row="1"
+            <TextBlock Grid.Row="1" 
                        HorizontalAlignment="Center"
                        FontFamily="Showcard Gothic" 
-                       FontSize="20">Desactivación de Tarjeta</TextBlock>
+                       FontSize="20">Consultar Historial</TextBlock>
             <TextBlock Grid.Row="2"
                        HorizontalAlignment="Center"
                        FontFamily="Showcard Gothic" 
-                       FontSize="20">De Usuario</TextBlock>
+                       FontSize="20">De Créditos</TextBlock>
             <TextBlock Grid.Row="3"/>
             <TextBlock Grid.Row="4"
                        HorizontalAlignment="Left"
@@ -55,21 +55,23 @@
                    x:Name="lblDato"
                    HorizontalAlignment="Center" 
                    FontFamily="Showcard Gothic"
-                   FontSize="14"
+                   FontSize="14" 
                    Content="Pase la tarjeta" 
                    VerticalAlignment="Center"/>
-            <TextBlock Grid.Row="6"
-                       HorizontalAlignment="Center"
-                       FontFamily="Showcard Gothic" 
-                       FontSize="16"
-                       VerticalAlignment="Center">¿Desactivar Tarjeta?</TextBlock>
+            <DataGrid Grid.Row="6"
+                      x:Name="DataGridHistorial"
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"
+                      Margin="5,5,5,5"/>
+
+
             <TextBlock Grid.Row="7"/>
         </Grid>
-        <Grid Grid.Row="1"
-              x:Name="ContBotonesDesactivarTarjeta"
+        <Grid x:Name="ContBotonesVerHistorial"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch" 
-              Margin="0,0,0,0">
+              Margin="0,0,0,0"
+              Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30*"/>
             </Grid.RowDefinitions>
@@ -82,28 +84,28 @@
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="1"
-                    x:Name="BtnCancelarDesactivarTarjeta"
+                    x:Name="BtnCancelarVerHistorial"
                     HorizontalAlignment="Stretch" 
                     Margin="0,0,0,0"
                     VerticalAlignment="Stretch"
                     FontFamily="Showcard Gothic" 
-                    FontSize="16"
-                    Click="BtnCancelarDesactivarTarjeta_Click">
+                    FontSize="16" Click="BtnCancelarVerHistorial_Click">
                 <StackPanel>
                     <!--><Image Source="Imagenes/Tarjetas.png" Width="38"/>-->
                     <TextBlock>Cancelar</TextBlock>
                 </StackPanel>
             </Button>
-            <Button FontSize="16"
-                    x:Name="BtnDesactivarDesactivarTarjeta"
+            <Button Grid.Column="3"
+                    x:Name="BtnBuscarVerHistorial"
                     HorizontalAlignment="Stretch" 
                     Margin="0,0,0,0"
                     VerticalAlignment="Stretch"
                     FontFamily="Showcard Gothic" 
-                    Grid.Column="3">
+                    IsEnabled="False"
+                    FontSize="16" Click="BtnBuscarVerHistorial_Click">
                 <StackPanel>
                     <!--><Image Source="Imagenes/Tarjetas.png" Width="38"/>-->
-                    <TextBlock>Desactivar</TextBlock>
+                    <TextBlock>Buscar</TextBlock>
                 </StackPanel>
             </Button>
         </Grid>

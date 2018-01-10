@@ -56,7 +56,8 @@
                    x:Name="IDUusuarioCargarCreditosMensuales" 
                    HorizontalAlignment="Center"
                    FontFamily="Showcard Gothic" 
-                   FontSize="14" Content=""
+                   FontSize="14"
+                   Content=""
                    VerticalAlignment="Center"/>
             <TextBlock Grid.Row="6"
                        HorizontalAlignment="Center"

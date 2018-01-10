@@ -21,30 +21,20 @@ namespace CajaDeBateo.ControlDeUsuarios
             try
             {
                 arduino = new ArduinoComunication(puerto, puertos);
-            }
-            catch (SensorNotFoundExceptio e)
-            {
-                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (Exception a)
-            {
-                MessageBox.Show(a.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                Thread.Sleep(1500);
-            }
-            //arduino.Reset();
-            try
-            {
                 arduino.RespuestaRecivida += new EventHandler(Read);
                 aux = lblDato;
                 arduino.Write("2");
                 lblDato.Content = "Pase la tarjeta";
             }
+            catch (SensorNotFoundExceptio e)
+            {
+                MessageBox.Show("Error. Conección con lectora/escritora no encontrada." + e.Message,
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             catch (NullReferenceException e)
             {
-                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error. Conección con lectora/escritora no encontrada." + e.Message,
+                    "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             this.IsVisibleChanged += ActivarTarjeta_IsVisibleChanged;
         }
@@ -52,16 +42,18 @@ namespace CajaDeBateo.ControlDeUsuarios
         private void ActivarTarjeta_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (!primera)
+            {
                 primera = true;
+            }
             else
             {
                 try
                 {
                     arduino.CerrarComunicacion();
                 }
-                catch(NullReferenceException ex)
+                catch (NullReferenceException ex)
                 {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    String Val = ex.Message;
                 }
             }
         }

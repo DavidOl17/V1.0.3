@@ -49,7 +49,7 @@ namespace CajaDeBateo
 
         public void RegresarPantallaInicial()
         {
-            stkUSerControlContainer.Children.Remove(controlDeVista);
+            stkUSerControlContainer.Children.Clear();
             controlDeVista = new PantallaInicial();
             stkUSerControlContainer.Children.Add(controlDeVista);
         }
@@ -195,9 +195,6 @@ namespace CajaDeBateo
                     break;
                 case "btnCrear":
                     stkUSerControlContainer.Children.Remove(controlDeVista);
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                    GC.Collect();
                     controlDeVista = new CrearTarjeta(puertoSeleccionado,puertos);
                     stkUSerControlContainer.Children.Add(controlDeVista);
                     break;
@@ -207,13 +204,13 @@ namespace CajaDeBateo
                     stkUSerControlContainer.Children.Add(controlDeVista);
                     break;
                 case "btnDesactivar":
-                    //stkUSerControlContainer.Children.Remove(controlDeVista);
-                    //controlDeVista = new DesactivarTarjeta(ref ardC);
-                    //stkUSerControlContainer.Children.Add(controlDeVista);
+                    stkUSerControlContainer.Children.Remove(controlDeVista);
+                    controlDeVista = new DesactivarTarjeta(puertoSeleccionado, puertos);
+                    stkUSerControlContainer.Children.Add(controlDeVista);
                     break;
                 case "btnAgregarMensual":
                     stkUSerControlContainer.Children.Remove(controlDeVista);
-                    controlDeVista = new CargarCreditosMensuales(puertoSeleccionado,puertos);
+                    controlDeVista = new CargarCreditosMensuales(puertoSeleccionado,puertos, CreditosMensuales);
                     stkUSerControlContainer.Children.Add(controlDeVista);
                     break;
                 case "btnMasCreditos":
@@ -227,6 +224,16 @@ namespace CajaDeBateo
                 case "btnConfigurarCreditosMensuales":
                     stkUSerControlContainer.Children.Remove(controlDeVista);
                     controlDeVista = new Configuracion(CreditosMensuales, ConfigPath);
+                    stkUSerControlContainer.Children.Add(controlDeVista);
+                    break;
+                case "btnVerCreditos":
+                    stkUSerControlContainer.Children.Remove(controlDeVista);
+                    controlDeVista = new VerActivos(puertoSeleccionado, puertos);
+                    stkUSerControlContainer.Children.Add(controlDeVista);
+                    break;
+                case "btnVerCreditosCompletos":
+                    stkUSerControlContainer.Children.Remove(controlDeVista);
+                    controlDeVista = new VerHistorial(puertoSeleccionado, puertos);
                     stkUSerControlContainer.Children.Add(controlDeVista);
                     break;
             }

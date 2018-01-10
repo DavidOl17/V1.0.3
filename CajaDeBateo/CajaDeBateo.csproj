@@ -77,6 +77,12 @@
     <Compile Include="ControlDeUsuarios\DesactivarTarjeta.xaml.cs">
       <DependentUpon>DesactivarTarjeta.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ControlDeUsuarios\VerActivos.xaml.cs">
+      <DependentUpon>VerActivos.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ControlDeUsuarios\VerHistorial.xaml.cs">
+      <DependentUpon>VerHistorial.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SeleccionaArduino.xaml.cs">
       <DependentUpon>SeleccionaArduino.xaml</DependentUpon>
     </Compile>
@@ -105,6 +111,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ControlDeUsuarios\PantallaInicial.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ControlDeUsuarios\VerActivos.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ControlDeUsuarios\VerHistorial.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

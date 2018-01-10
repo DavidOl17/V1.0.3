@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.0
+-- version 4.7.4
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-01-2018 a las 00:29:11
--- Versión del servidor: 10.1.24-MariaDB
--- Versión de PHP: 7.1.6
+-- Tiempo de generación: 10-01-2018 a las 16:35:36
+-- Versión del servidor: 10.1.29-MariaDB
+-- Versión de PHP: 7.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -21,8 +21,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `caja_bateo`
 --
-CREATE DATABASE IF NOT EXISTS `caja_bateo` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `caja_bateo`;
 
 -- --------------------------------------------------------
 
@@ -32,8 +30,8 @@ USE `caja_bateo`;
 
 CREATE TABLE `creditos_aderidos` (
   `id_tarjeta` int(11) NOT NULL,
-  `fecha_adicion` varchar(30) NOT NULL,
-  `fecha_vencimiento` varchar(20) NOT NULL,
+  `fecha_adicion` datetime NOT NULL,
+  `fecha_vencimiento` date NOT NULL,
   `creditos_aderidos` int(11) NOT NULL,
   `creditos_disponibles` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -43,11 +41,11 @@ CREATE TABLE `creditos_aderidos` (
 --
 
 INSERT INTO `creditos_aderidos` (`id_tarjeta`, `fecha_adicion`, `fecha_vencimiento`, `creditos_aderidos`, `creditos_disponibles`) VALUES
-(10121, '09/01/2018 04:54:48 p. m.', '09 / 02 / 2018', 11, 11),
-(10121, '09/01/2018 04:55:46 p. m.', '09 / 02 / 2018', 13, 13),
-(10122, '09/01/2018 04:55:55 p. m.', '09 / 02 / 2018', 15, 15),
-(10123, '09/01/2018 04:57:02 p. m.', '09 / 02 / 2018', 10, 10),
-(10124, '09/01/2018 04:57:10 p. m.', '09 / 02 / 2018', 10, 10);
+(10121, '2018-01-09 16:54:48', '2018-02-09', 11, 11),
+(10121, '2018-01-09 16:55:46', '2018-02-09', 13, 13),
+(10122, '2018-01-09 16:55:55', '2018-02-09', 15, 15),
+(10123, '2018-01-09 16:57:02', '2018-02-09', 10, 10),
+(10124, '2018-01-09 16:57:10', '2018-02-09', 11, 11);
 
 -- --------------------------------------------------------
 
@@ -57,8 +55,8 @@ INSERT INTO `creditos_aderidos` (`id_tarjeta`, `fecha_adicion`, `fecha_vencimien
 
 CREATE TABLE `creditos_mensuales` (
   `id_tarjeta` int(11) NOT NULL,
-  `fecha_adicion` varchar(20) NOT NULL,
-  `fecha_vencimiento` varchar(20) NOT NULL,
+  `fecha_adicion` date NOT NULL,
+  `fecha_vencimiento` date NOT NULL,
   `creditos_aderidos` int(11) NOT NULL,
   `creditos_disponibles` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -68,16 +66,16 @@ CREATE TABLE `creditos_mensuales` (
 --
 
 INSERT INTO `creditos_mensuales` (`id_tarjeta`, `fecha_adicion`, `fecha_vencimiento`, `creditos_aderidos`, `creditos_disponibles`) VALUES
-(10115, '09/01/2018', '09/02/2018', 10, 10),
-(10116, '09/01/2018', '09/02/2018', 10, 10),
-(10117, '09/01/2018', '09/02/2018', 10, 10),
-(10118, '09/01/2018', '09/02/2018', 10, 10),
-(10119, '09/01/2018', '09/02/2018', 10, 10),
-(10120, '09/01/2018', '09/02/2018', 10, 10),
-(10121, '09/01/2018', '09/02/2018', 10, 10),
-(10122, '09/01/2018', '09/02/2018', 10, 10),
-(10123, '09/01/2018', '09/02/2018', 10, 10),
-(10124, '09/01/2018', '09/02/2018', 10, 10);
+(10115, '2018-02-10', '2018-02-10', 10, 10),
+(10116, '2018-02-10', '2018-02-10', 10, 10),
+(10117, '2018-02-10', '2018-02-10', 10, 10),
+(10118, '2018-02-10', '2018-02-10', 10, 10),
+(10119, '2018-02-10', '2018-02-10', 10, 10),
+(10120, '2018-02-10', '2018-02-10', 10, 10),
+(10121, '2018-02-10', '2018-02-10', 10, 10),
+(10122, '2018-02-10', '2018-02-10', 10, 10),
+(10123, '2018-02-10', '2018-02-10', 10, 10),
+(10124, '2018-02-10', '2018-02-10', 10, 10);
 
 -- --------------------------------------------------------
 
@@ -253,6 +251,7 @@ ALTER TABLE `tarjeta`
 --
 ALTER TABLE `tarjeta`
   MODIFY `id_tarjeta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10125;
+
 --
 -- Restricciones para tablas volcadas
 --

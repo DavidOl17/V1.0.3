@@ -55,7 +55,8 @@
                    x:Name="lblDato"
                    HorizontalAlignment="Center" 
                    FontFamily="Showcard Gothic"
-                   FontSize="14" Content="ID" 
+                   FontSize="14" 
+                   Content="Pase la tarjeta" 
                    VerticalAlignment="Center"/>
             <TextBlock Grid.Row="6"
                        HorizontalAlignment="Center"
