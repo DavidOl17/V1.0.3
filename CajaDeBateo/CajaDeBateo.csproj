@@ -73,6 +73,9 @@
     <Compile Include="ControlDeUsuarios\Configuracion.xaml.cs">
       <DependentUpon>Configuracion.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ControlDeUsuarios\Contacto.xaml.cs">
+      <DependentUpon>Contacto.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ControlDeUsuarios\CrearTarjeta.xaml.cs">
       <DependentUpon>CrearTarjeta.xaml</DependentUpon>
     </Compile>
@@ -101,6 +104,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ControlDeUsuarios\Configuracion.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ControlDeUsuarios\Contacto.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

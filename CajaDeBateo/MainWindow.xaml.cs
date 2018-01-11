@@ -241,6 +241,11 @@ namespace CajaDeBateo
                     controlDeVista = new Actualizar(puertoSeleccionado, puertos);
                     stkUSerControlContainer.Children.Add(controlDeVista);
                     break;
+                case "btnAcercaNosotros":
+                    stkUSerControlContainer.Children.Remove(controlDeVista);
+                    controlDeVista = new Contacto();
+                    stkUSerControlContainer.Children.Add(controlDeVista);
+                    break;
             }
         }
     }
