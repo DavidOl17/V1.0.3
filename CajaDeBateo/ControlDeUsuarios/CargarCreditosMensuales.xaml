@@ -57,7 +57,7 @@
                    HorizontalAlignment="Center"
                    FontFamily="Showcard Gothic" 
                    FontSize="14"
-                   Content=""
+                   Content="Pase la tarjeta"
                    VerticalAlignment="Center"/>
             <TextBlock Grid.Row="6"
                        HorizontalAlignment="Center"

@@ -19,9 +19,9 @@ using System.Data;
 namespace CajaDeBateo.ControlDeUsuarios
 {
     /// <summary>
-    /// Interaction logic for VerHistorial.xaml
+    /// Interaction logic for Actualizar.xaml
     /// </summary>
-    public partial class VerHistorial : UserControl
+    public partial class Actualizar : UserControl
     {
         private ArduinoComunication arduino;
         private Label aux;
@@ -31,7 +31,7 @@ namespace CajaDeBateo.ControlDeUsuarios
         private String AuxPerm = "";
         private String AuxTem = "";
 
-        public VerHistorial(int puerto, string[] puertos)
+        public Actualizar(int puerto, string[] puertos)
         {
             InitializeComponent();
             try
@@ -43,7 +43,7 @@ namespace CajaDeBateo.ControlDeUsuarios
                 arduino.Write("2");
                 lblDato.Content = "Pase la tarjeta";
                 ArduinoConectado = true;
-                this.IsVisibleChanged += VerHistorial_IsVisibleChanged;
+                this.IsVisibleChanged += Actualizar_IsVisibleChanged;
             }
             catch (SensorNotFoundExceptio e)
             {
@@ -65,7 +65,7 @@ namespace CajaDeBateo.ControlDeUsuarios
             }
         }
 
-        private void VerHistorial_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void Actualizar_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (!primera)
             {
@@ -91,19 +91,20 @@ namespace CajaDeBateo.ControlDeUsuarios
             lblDato.Dispatcher.Invoke(new Action(() => { lblDato.Content = data; }));
         }
 
-        private void BtnCancelarVerHistorial_Click(object sender, RoutedEventArgs e)
+        private void BtnCancelarActualizar_Click(object sender, RoutedEventArgs e)
         {
             MainWindow Win = (MainWindow)Window.GetWindow(this);
             Win.RegresarPantallaInicial();
         }
 
-        private void BtnBuscarVerHistorial_Click(object sender, RoutedEventArgs e)
+        private void BtnBuscarActualizar_Click(object sender, RoutedEventArgs e)
         {
             ObtenerDatos();
+
             if (ArduinoConectado)
             {
                 lblDato.Content = "Pase la tarjeta";
-                BtnBuscarVerHistorial.IsEnabled = false;
+                BtnBuscarActualizar.IsEnabled = false;
                 try
                 {
                     arduino.Write("2");
@@ -123,7 +124,7 @@ namespace CajaDeBateo.ControlDeUsuarios
             else
                 Arg = TlblDato.Text;
 
-            List<String> Datos = baseDeDatos.ObtenerHistorial(Arg);
+            List<String> Datos = baseDeDatos.ObtenerConCreditosDisponibles(Arg);
             if (Datos.Count == 1 && Datos.ElementAt(0) == ".")
             {
                 MessageBox.Show("Error al realizar la consulta a la base de datos. Llame a soporte. ", "Error",
@@ -156,7 +157,7 @@ namespace CajaDeBateo.ControlDeUsuarios
                     }
                     Tabla.Rows.Add(Fila);
                 }
-                DataGridHistorial.ItemsSource = Tabla.DefaultView;
+                DataGridActualizar.ItemsSource = Tabla.DefaultView;
             }
         }
 
@@ -172,7 +173,7 @@ namespace CajaDeBateo.ControlDeUsuarios
                 TlblDato.Text = AuxPerm;
                 TlblDato.CaretIndex = TlblDato.Text.Length;
             }
-            BtnBuscarVerHistorial.IsEnabled = (AuxTem.Length > 0);
+            BtnBuscarActualizar.IsEnabled = (AuxTem.Length > 0);
         }
 
         private bool EsNumCorrecto(String Cadena)

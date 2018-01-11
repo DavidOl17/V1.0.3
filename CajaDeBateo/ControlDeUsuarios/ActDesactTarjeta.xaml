@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="CajaDeBateo.ControlDeUsuarios.ActivarTarjeta"
+﻿<UserControl x:Class="CajaDeBateo.ControlDeUsuarios.ActDesactTarjeta"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -16,11 +16,11 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Grid x:Name="ContDatosActivarTarjeta"
+        <Grid Grid.Row="0"
+              x:Name="ContDatosActDesactTarjeta"
               HorizontalAlignment="Stretch" 
               VerticalAlignment="Stretch"
-              Margin="0,0,0,0" 
-              Grid.Row="0">
+              Margin="0,0,0,0" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
@@ -36,10 +36,13 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0"/>
-            <TextBlock Grid.Row="1" 
-                       HorizontalAlignment="Center"
-                       FontFamily="Showcard Gothic" 
-                       FontSize="20">Activación de Tarjeta</TextBlock>
+            <Label Grid.Row="1"
+                   x:Name="lblEncabezado"
+                   HorizontalAlignment="Center"
+                   FontFamily="Showcard Gothic" 
+                   FontSize="20"
+                   Height="40"
+                   Content=""/>
             <TextBlock Grid.Row="2"
                        HorizontalAlignment="Center"
                        FontFamily="Showcard Gothic" 
@@ -58,14 +61,16 @@
                    FontSize="14" 
                    Content="Pase la tarjeta" 
                    VerticalAlignment="Center"/>
-            <TextBlock Grid.Row="6"
-                       HorizontalAlignment="Center"
-                       FontFamily="Showcard Gothic" 
-                       FontSize="16"
-                       VerticalAlignment="Center">¿Activar Tarjeta?</TextBlock>
+            <Label Grid.Row="6"
+                   x:Name="lblPregunta"
+                   HorizontalAlignment="Center"
+                   FontFamily="Showcard Gothic" 
+                   FontSize="16"
+                   VerticalAlignment="Center"
+                   Content=""/>
             <TextBlock Grid.Row="7"/>
         </Grid>
-        <Grid x:Name="ContBotonesActivarTarjeta"
+        <Grid x:Name="ContBotonesActDesactTarjeta"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch" 
               Margin="0,0,0,0"
@@ -82,28 +87,30 @@
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="1"
-                    x:Name="BtnCancelarActivarTarjeta"
+                    x:Name="BtnCancelarActDesactTarjeta"
                     HorizontalAlignment="Stretch" 
                     Margin="0,0,0,0"
                     VerticalAlignment="Stretch"
                     FontFamily="Showcard Gothic" 
                     FontSize="16"
-                    Click="BtnCancelarActivarTarjeta_Click">
+                    Click="BtnCancelarActDesactTarjeta_Click">
                 <StackPanel>
                     <!--><Image Source="Imagenes/Tarjetas.png" Width="38"/>-->
                     <TextBlock>Cancelar</TextBlock>
                 </StackPanel>
             </Button>
             <Button Grid.Column="3"
-                    x:Name="BtnActivarActivarTarjeta"
+                    x:Name="BtnAccionActDesactTarjeta"
                     HorizontalAlignment="Stretch" 
                     Margin="0,0,0,0"
-                    VerticalAlignment="Stretch"
                     FontFamily="Showcard Gothic" 
-                    FontSize="16">
+                    FontSize="16"
+                    IsEnabled="True"
+                    Click="BtnAccionActivarTarjeta_Click">
                 <StackPanel>
                     <!--><Image Source="Imagenes/Tarjetas.png" Width="38"/>-->
-                    <TextBlock>Activar</TextBlock>
+                    <Label x:Name="lblBoton"
+                           Content=""/>
                 </StackPanel>
             </Button>
         </Grid>

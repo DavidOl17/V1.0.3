@@ -30,7 +30,7 @@
                 <RowDefinition Height="25"/>
                 <RowDefinition Height="2*"/>
                 <RowDefinition Height="20"/>
-                <RowDefinition Height="25"/>
+                <RowDefinition Height="30"/>
                 <RowDefinition Height="80*"/>
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
@@ -58,13 +58,23 @@
                    FontSize="14" 
                    Content="Pase la tarjeta" 
                    VerticalAlignment="Center"/>
+            <TextBox Grid.Row="5"
+                     x:Name="TlblDato"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     Height="25"
+                     Width="150"
+                     Visibility="Hidden"
+                     TextWrapping="Wrap"
+                     FontFamily="Showcard Gothic" 
+                     FontSize="14"
+                     TextChanged="TlblDato_TextChanged"
+                     KeyDown="OnKeyDownHandler"/>
             <DataGrid Grid.Row="6"
                       x:Name="DataGridHistorial"
                       VerticalAlignment="Stretch"
                       HorizontalAlignment="Stretch"
                       Margin="5,5,5,5"/>
-
-
             <TextBlock Grid.Row="7"/>
         </Grid>
         <Grid x:Name="ContBotonesVerHistorial"
@@ -89,7 +99,8 @@
                     Margin="0,0,0,0"
                     VerticalAlignment="Stretch"
                     FontFamily="Showcard Gothic" 
-                    FontSize="16" Click="BtnCancelarVerHistorial_Click">
+                    FontSize="16"
+                    Click="BtnCancelarVerHistorial_Click">
                 <StackPanel>
                     <!--><Image Source="Imagenes/Tarjetas.png" Width="38"/>-->
                     <TextBlock>Cancelar</TextBlock>
@@ -102,13 +113,13 @@
                     VerticalAlignment="Stretch"
                     FontFamily="Showcard Gothic" 
                     IsEnabled="False"
-                    FontSize="16" Click="BtnBuscarVerHistorial_Click">
+                    FontSize="16"
+                    Click="BtnBuscarVerHistorial_Click">
                 <StackPanel>
                     <!--><Image Source="Imagenes/Tarjetas.png" Width="38"/>-->
                     <TextBlock>Buscar</TextBlock>
                 </StackPanel>
             </Button>
         </Grid>
-        <TextBlock Grid.Column="2"/>
     </Grid>
 </UserControl>

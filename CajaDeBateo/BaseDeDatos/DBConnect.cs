@@ -204,17 +204,57 @@ namespace CajaDeBateo.BaseDeDatos
         }
         //Update statement
 
-        public void ModificarFechaVencimiento()
+        public void ModificarFechaVencimiento(String id_tarjeta, String FechaAdicion,String NuevaVencimiento)
         {
+            //STR_TO_DATE(\'"
         }
 
-        //Delete statement
-        public void ActivarTarjeta()
+        public int ActDesactTarjeta(String id_tarjeta, int Accion)
         {
-        }
+            // 0 Correcto
+            // 1 Tarjeta actualmente activada o desactivaao / no es necesario realizar accion
+            // 2 Tarjeta no existen
+            // 3 Error de acceso a base de datos
+            string query = "SELECT status FROM tarjeta WHERE id_tarjeta = " + id_tarjeta;
+            int status = -1;
+            if (this.OpenConnection())
+            {
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                MySqlDataReader Reader = cmd.ExecuteReader();
+                int Contador = 0;
+                while (Reader.Read())
+                {
+                    Contador++;
+                    status = int.Parse(Reader[0].ToString());
+                }
 
-        public void DesactivarTarjeta()
-        {
+                if (Contador == 0)
+                    return 2;
+
+                if (status == Accion)
+                    return 1;
+                this.CloseConnection();
+            }
+            else
+            {
+                MessageBox.Show("Error al conectar a la base de datos. Contacte a soporte.", "Error", 
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return 3;
+            }
+
+            query = "UPDATE tarjeta SET status = " + Accion.ToString() + " WHERE id_tarjeta = " + id_tarjeta;
+            if (this.OpenConnection())
+            {
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.ExecuteNonQuery();
+                return 0;
+            }
+            else
+            {
+                MessageBox.Show("Error al conectar a la base de datos. Contacte a soporte.", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return 3;
+            }
         }
 
         //Select statement
@@ -352,12 +392,15 @@ namespace CajaDeBateo.BaseDeDatos
         public List<String> ObtenerCreditosActivos(String idTarjeta)
         {
             List<String> Datos = new List<string>();
-            List<String> Aux = new List<string>();
+            List<String> Aux = new List<string>()
+            {
+                "."
+            };
 
-            string query = "SELECT * FROM creditos_aderidos WHERE id_tarjeta = " + idTarjeta +
+            string query = "SELECT * FROM creditos_mensuales WHERE id_tarjeta = " + idTarjeta +
                 " AND fecha_vencimiento > CURRENT_DATE() AND creditos_disponibles > 0" +
                 " UNION " +
-                "SELECT * FROM creditos_mensuales WHERE id_tarjeta = " + idTarjeta +
+                "SELECT * FROM creditos_aderidos WHERE id_tarjeta = " + idTarjeta +
                 " AND fecha_vencimiento > CURRENT_DATE() AND creditos_disponibles > 0";
             if (this.OpenConnection())
             {
@@ -389,7 +432,7 @@ namespace CajaDeBateo.BaseDeDatos
                     }
 
                     String CadAux = Tipo + "|" + Adicion + "|" + Vencimiento + "|" + Aderidos + "|" + Disponibles;
-                    Datos.Insert(Datos.Count,CadAux);
+                    Datos.Add(CadAux);
                 }
                 this.CloseConnection();
             }
@@ -403,11 +446,15 @@ namespace CajaDeBateo.BaseDeDatos
         public List<String> ObtenerHistorial(String idTarjeta)
         {
             List<String> Datos = new List<string>();
-            List<String> Aux = new List<string>();
+            List<String> Aux = new List<string>()
+            {
+                "."
+            };
 
-            string query = "SELECT * FROM creditos_aderidos WHERE id_tarjeta = " + idTarjeta +
+            string query = "SELECT * FROM creditos_mensuales WHERE id_tarjeta = " + idTarjeta +
                 " UNION " +
-                "SELECT * FROM creditos_mensuales WHERE id_tarjeta = " + idTarjeta;
+                "SELECT * FROM creditos_aderidos WHERE id_tarjeta = " + idTarjeta;
+            Console.WriteLine(query);
             if (this.OpenConnection())
             {
                 MySqlCommand cmd = new MySqlCommand(query, connection);
@@ -438,7 +485,59 @@ namespace CajaDeBateo.BaseDeDatos
                     }
 
                     String CadAux = Tipo + "|" + Adicion + "|" + Vencimiento + "|" + Aderidos + "|" + Disponibles;
-                    Datos.Insert(Datos.Count, CadAux);
+                    Datos.Add(CadAux);
+                }
+                this.CloseConnection();
+            }
+            else
+            {
+                return Aux;
+            }
+            return Datos;
+        }
+
+        public List<String> ObtenerConCreditosDisponibles(String idTarjeta)
+        {
+            List<String> Datos = new List<string>();
+            List<String> Aux = new List<string>()
+            {
+                "."
+            };
+
+            string query = "SELECT * FROM creditos_mensuales WHERE id_tarjeta = " + idTarjeta + " AND creditos_disponibles > 0" +
+                " UNION " +
+                "SELECT * FROM creditos_aderidos WHERE id_tarjeta = " + idTarjeta + " AND creditos_disponibles > 0";
+            if (this.OpenConnection())
+            {
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                MySqlDataReader Reader = cmd.ExecuteReader();
+                while (Reader.Read())
+                {
+                    String Tipo = "";
+                    String ID = Reader[0].ToString();
+                    String Adicion = Reader[1].ToString();
+                    String Vencimiento = Reader[2].ToString();
+                    String Aderidos = Reader[3].ToString();
+                    String Disponibles = Reader[4].ToString();
+
+                    int Index = Adicion.LastIndexOf("12:00:00 a. m.");
+                    if (Index > 0)
+                    {
+                        Adicion = Adicion.Substring(0, Index - 1);
+                        Tipo = "Mensuales";
+                    }
+                    else
+                    {
+                        Tipo = "Adicionales";
+                    }
+                    Index = Vencimiento.LastIndexOf("12:00:00 a. m.");
+                    if (Index > 0)
+                    {
+                        Vencimiento = Vencimiento.Substring(0, Index - 1);
+                    }
+
+                    String CadAux = Tipo + "|" + Adicion + "|" + Vencimiento + "|" + Aderidos + "|" + Disponibles;
+                    Datos.Add(CadAux);
                 }
                 this.CloseConnection();
             }

@@ -23,10 +23,13 @@ namespace CajaDeBateo.ControlDeUsuarios
     /// </summary>
     public partial class VerActivos : UserControl
     {
-        ArduinoComunication arduino;
-        Label aux;
-        bool primera = false;
-        DBConnect baseDeDatos;
+        private ArduinoComunication arduino;
+        private Label aux;
+        private bool primera = false;
+        private DBConnect baseDeDatos;
+        private bool ArduinoConectado;
+        private String AuxPerm = "";
+        private String AuxTem = "";
 
         public VerActivos(int puerto, string[] puertos)
         {
@@ -39,18 +42,27 @@ namespace CajaDeBateo.ControlDeUsuarios
                 aux = lblDato;
                 arduino.Write("2");
                 lblDato.Content = "Pase la tarjeta";
+                ArduinoConectado = true;
+                this.IsVisibleChanged += VerActivos_IsVisibleChanged;
             }
             catch (SensorNotFoundExceptio e)
             {
                 MessageBox.Show("Error. Conección con lectora/escritora no encontrada." + e.Message,
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                ArduinoConectado = false;
             }
             catch (NullReferenceException e)
             {
                 MessageBox.Show("Error. Conección con lectora/escritora no encontrada." + e.Message,
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                ArduinoConectado = false;
             }
-            this.IsVisibleChanged += VerActivos_IsVisibleChanged;
+            if(!ArduinoConectado)
+            {
+                lblDato.Visibility = Visibility.Hidden;
+                TlblDato.Visibility = Visibility.Visible;
+                TlblDato.Focus();
+            }
         }
 
         private void VerActivos_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -87,10 +99,39 @@ namespace CajaDeBateo.ControlDeUsuarios
 
         private void BtnBuscarVerActivos_Click(object sender, RoutedEventArgs e)
         {
-            List<String> Datos = baseDeDatos.ObtenerCreditosActivos(lblDato.Content.ToString());
-            if(Datos.Count == 0)
+            ObtenerDatos();
+            if (ArduinoConectado)
             {
-                MessageBox.Show("No se encontraron créditos activos para el usuario seleccionado.", "Sin resultados",
+                lblDato.Content = "Pase la tarjeta";
+                BtnBuscarVerActivos.IsEnabled = false;
+                try
+                {
+                    arduino.Write("2");
+                }
+                catch (NullReferenceException ex)
+                {
+                    String Val = ex.Message;
+                }
+            }
+        }
+
+        void ObtenerDatos()
+        {
+            String Arg;
+            if (ArduinoConectado)
+                Arg = lblDato.Content.ToString();
+            else
+                Arg = TlblDato.Text;
+
+            List<String> Datos = baseDeDatos.ObtenerCreditosActivos(Arg);
+            if (Datos.Count == 1 && Datos.ElementAt(0) == ".")
+            {
+                MessageBox.Show("Error al realizar la consulta a la base de datos. Llame a soporte. ", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else if (Datos.Count == 0)
+            {
+                MessageBox.Show("No se encontraron cargas de créditos para el usuario seleccionado.", "Sin resultados",
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
             else
@@ -109,7 +150,7 @@ namespace CajaDeBateo.ControlDeUsuarios
                     String[] ListaAux = Aux.Split(new[] { '|' }, StringSplitOptions.None);
 
                     DataRow Fila = Tabla.NewRow();
-                    for(int j = 0; j < ListaAux.Count(); j++)
+                    for (int j = 0; j < ListaAux.Count(); j++)
                     {
                         Fila[j] = ListaAux[j];
                     }
@@ -117,16 +158,35 @@ namespace CajaDeBateo.ControlDeUsuarios
                 }
                 DataGridActivos.ItemsSource = Tabla.DefaultView;
             }
+        }
 
-            lblDato.Content = "Pase la tarjeta";
-            BtnBuscarVerActivos.IsEnabled = false;
-            try
+        private void TlblDato_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            AuxTem = TlblDato.Text;
+            if (EsNumCorrecto(AuxTem) || TlblDato.Text.Length == 0)
             {
-                arduino.Write("2");
+                AuxPerm = AuxTem;
             }
-            catch (NullReferenceException ex)
+            else
             {
-                String Val = ex.Message;
+                TlblDato.Text = AuxPerm;
+                TlblDato.CaretIndex = TlblDato.Text.Length;
+            }
+            BtnBuscarVerActivos.IsEnabled = (AuxTem.Length > 0);
+        }
+
+        private bool EsNumCorrecto(String Cadena)
+        {
+            int n = 0;
+            bool EsNumero = int.TryParse(Cadena, out n);
+            return (EsNumero && n > 0 && n <= 2147483647);
+        }
+
+        private void OnKeyDownHandler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                ObtenerDatos();
             }
         }
     }

@@ -200,12 +200,12 @@ namespace CajaDeBateo
                     break;
                 case "btnActivar":
                     stkUSerControlContainer.Children.Remove(controlDeVista);
-                    controlDeVista = new ActivarTarjeta(puertoSeleccionado,puertos);
+                    controlDeVista = new ActDesactTarjeta(puertoSeleccionado, puertos, 1);
                     stkUSerControlContainer.Children.Add(controlDeVista);
                     break;
                 case "btnDesactivar":
                     stkUSerControlContainer.Children.Remove(controlDeVista);
-                    controlDeVista = new DesactivarTarjeta(puertoSeleccionado, puertos);
+                    controlDeVista = new ActDesactTarjeta(puertoSeleccionado, puertos, 0);
                     stkUSerControlContainer.Children.Add(controlDeVista);
                     break;
                 case "btnAgregarMensual":
@@ -234,6 +234,11 @@ namespace CajaDeBateo
                 case "btnVerCreditosCompletos":
                     stkUSerControlContainer.Children.Remove(controlDeVista);
                     controlDeVista = new VerHistorial(puertoSeleccionado, puertos);
+                    stkUSerControlContainer.Children.Add(controlDeVista);
+                    break;
+                case "btnActualizarCreditos":
+                    stkUSerControlContainer.Children.Remove(controlDeVista);
+                    controlDeVista = new Actualizar(puertoSeleccionado, puertos);
                     stkUSerControlContainer.Children.Add(controlDeVista);
                     break;
             }
