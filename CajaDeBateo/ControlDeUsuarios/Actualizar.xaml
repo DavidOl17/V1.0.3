@@ -9,18 +9,17 @@
              d:DesignWidth="300">
     <Grid Background="White">
         <Grid.RowDefinitions>
-            <RowDefinition Height="85*"/>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="5*"/>
+            <RowDefinition Height="80*"/>
+            <RowDefinition Height="20*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Grid x:Name="ContDatosActualizar"
+        <Grid Grid.Row="0"
+              x:Name="ContDatosActualizar"
               HorizontalAlignment="Stretch" 
               VerticalAlignment="Stretch"
-              Margin="0,0,0,0" 
-              Grid.Row="0">
+              Margin="0,0,0,0" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
@@ -74,26 +73,99 @@
                       x:Name="DataGridActualizar"
                       VerticalAlignment="Stretch"
                       HorizontalAlignment="Stretch"
-                      Margin="5,5,5,5"/>
+                      Margin="5,5,5,5"
+                      IsReadOnly="True"
+                      Visibility="Visible">
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridRow">
+                        <EventSetter Event="MouseDoubleClick" Handler="Row_DoubleClick"/>
+                    </Style>
+                </DataGrid.Resources>
+            </DataGrid>
+            <Grid Grid.Row="6"
+                  x:Name="ContCalendarActualizar"
+                  Visibility="Hidden">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="75*"/>
+                    <ColumnDefinition Width="25*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Viewbox Grid.Column="0">
+                    <Calendar x:Name="CalendarActualizar"
+                              VerticalAlignment="Center"
+                              HorizontalAlignment="Center"
+                              SelectedDatesChanged="CalendarActualizar_SelectedDatesChanged"/>
+                </Viewbox>
+
+                <Grid Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Button Grid.Row="0"
+                    x:Name="BtnCalendarAceptar"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Height="60"
+                            Width="75"
+                            Margin="0,0,0,0"
+                            FontFamily="Showcard Gothic" 
+                            FontSize="14"
+                            IsEnabled="False"
+                            Click="BtnCalendarAceptar_Click">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Imagenes/Listo.png" Width="38"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Grid.Row="1"
+                            x:Name="BtnCalendarCancelar"
+                            HorizontalAlignment="Stretch" 
+                            VerticalAlignment="Stretch"
+                            Height="60"
+                            Width="75"
+                            Margin="0,0,0,0"
+                            FontFamily="Showcard Gothic" 
+                            FontSize="14"
+                            Click="BtnCalendarCancelar_Click">
+                        <StackPanel>
+                            <Image Source="pack://application:,,,/Imagenes/Cancelar.png" Width="38"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Grid>
+
+
             <TextBlock Grid.Row="7"/>
         </Grid>
-        <Grid x:Name="ContBotonesActualizar"
+        <Grid Grid.Row="1"
+              x:Name="ContBotonesActualizar"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch" 
-              Margin="0,0,0,0"
-              Grid.Row="1">
+              Margin="0,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="15*"/>
+                <ColumnDefinition Width="20*"/>
                 <ColumnDefinition Width="30*"/>
-                <ColumnDefinition Width="15*"/>
+                <ColumnDefinition Width="35*"/>
+                <!--<ColumnDefinition Width="15*"/>
+                <ColumnDefinition Width="5*"/>
                 <ColumnDefinition Width="30*"/>
-                <ColumnDefinition Width="15*"/>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="30*"/>
+                <ColumnDefinition Width="15*"/>-->
             </Grid.ColumnDefinitions>
+            
 
-            <Button Grid.Column="1"
+            <Button Grid.Column="0"
                     x:Name="BtnCancelarActualizar"
                     HorizontalAlignment="Stretch" 
                     Margin="0,0,0,0"
@@ -102,24 +174,36 @@
                     FontSize="16"
                     Click="BtnCancelarActualizar_Click">
                 <StackPanel>
-                    <!--><Image Source="Imagenes/Tarjetas.png" Width="38"/>-->
-                    <TextBlock>Cancelar</TextBlock>
+                    <Image Source="pack://application:,,,/Imagenes/Regresar.png" Width="38"/>
                 </StackPanel>
             </Button>
-            <Button Grid.Column="3"
+            <Button Grid.Column="2"
                     x:Name="BtnBuscarActualizar"
+                    HorizontalAlignment="Stretch" 
+                    Margin="0,0,0,0"
+                    VerticalAlignment="Stretch"
+                    FontFamily="Showcard Gothic" 
+                    FontSize="16"
+                    IsEnabled="False"
+                    Click="BtnBuscarActualizar_Click">
+                <StackPanel>
+                    <Image Source="pack://application:,,,/Imagenes/Ver.png" Width="38"/>
+                </StackPanel>
+            </Button>
+
+            <!--<Button Grid.Column="4"
+                    x:Name="BtnGuardarActualizar"
                     HorizontalAlignment="Stretch" 
                     Margin="0,0,0,0"
                     VerticalAlignment="Stretch"
                     FontFamily="Showcard Gothic" 
                     IsEnabled="False"
                     FontSize="16"
-                    Click="BtnBuscarActualizar_Click">
+                    Click="BtnGuardarActualizar_Click">
                 <StackPanel>
-                    <!--><Image Source="Imagenes/Tarjetas.png" Width="38"/>-->
-                    <TextBlock>Buscar</TextBlock>
+                    <Image Source="pack://application:,,,/Imagenes/Listo.png" Width="38"/>
                 </StackPanel>
-            </Button>
+            </Button>-->
         </Grid>
     </Grid>
 </UserControl>

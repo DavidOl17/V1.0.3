@@ -27,12 +27,10 @@ namespace CajaDeBateo.ControlDeUsuarios
                 case 0:
                     lblEncabezado.Content = "Desactivación de Tarjeta";
                     lblPregunta.Content = "¿Desactivar Tarjeta?";
-                    lblBoton.Content = "Desactivar";
                     break;
                 case 1:
                     lblEncabezado.Content = "Activación de Tarjeta";
                     lblPregunta.Content = "¿Activar Tarjeta?";
-                    lblBoton.Content = "Activar";
                     break;
             }
             TipoDeAccion = Tipo;

@@ -126,7 +126,7 @@ namespace CajaDeBateo.ControlDeUsuarios
         }
         void ActivaControles(string data)
         {
-            BtnGuardarCargarCreditosAdicionales.Dispatcher.Invoke(new Action(() => { BtnGuardarCargarCreditosAdicionales.IsEnabled = true; }));
+            //BtnGuardarCargarCreditosAdicionales.Dispatcher.Invoke(new Action(() => { BtnGuardarCargarCreditosAdicionales.IsEnabled = true; }));
             CantidadCreditosAdicionales.Dispatcher.Invoke(new Action(() => { CantidadCreditosAdicionales.IsEnabled = true; }));
             IDUusuarioCargarCreditosAdicionales.Dispatcher.Invoke(new Action(() => { IDUusuarioCargarCreditosAdicionales.Content = data; }));
         }

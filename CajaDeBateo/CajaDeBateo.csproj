@@ -37,7 +37,9 @@
     <Reference Include="MySql.Data, Version=6.10.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -204,6 +206,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Imagenes\Respaldo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Imagenes\Guardar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Imagenes\Listo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Imagenes\Cancelar.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

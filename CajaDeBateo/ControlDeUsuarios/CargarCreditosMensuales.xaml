@@ -9,9 +9,8 @@
              d:DesignWidth="300">
     <Grid Background="White">
         <Grid.RowDefinitions>
-            <RowDefinition Height="85*"/>
-            <RowDefinition Height="10*"/>
-            <RowDefinition Height="5*"/>
+            <RowDefinition Height="80*"/>
+            <RowDefinition Height="20*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -76,13 +75,12 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="15*"/>
+                <ColumnDefinition Width="20*"/>
                 <ColumnDefinition Width="30*"/>
-                <ColumnDefinition Width="15*"/>
-                <ColumnDefinition Width="30*"/>
-                <ColumnDefinition Width="15*"/>
+                <ColumnDefinition Width="35*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="1"
+            <Button Grid.Column="0"
                     x:Name="BtnCancelarCargarCreditosMensuales"
                     HorizontalAlignment="Stretch" 
                     Margin="0,0,0,0"
@@ -91,11 +89,10 @@
                     FontSize="16"
                     Click="BtnCancelarCargarCreditosMensuales_Click">
                 <StackPanel>
-                    <!--><Image Source="Imagenes/Tarjetas.png" Width="38"/>-->
-                    <TextBlock>Cancelar</TextBlock>
+                    <Image Source="pack://application:,,,/Imagenes/Regresar.png" Width="38"/>
                 </StackPanel>
             </Button>
-            <Button Grid.Column="3"
+            <Button Grid.Column="2"
                     x:Name="BtnGuardarCargarCreditosMensuales"
                     HorizontalAlignment="Stretch" 
                     Margin="0,0,0,0"
@@ -104,11 +101,9 @@
                     FontSize="16"
                     Click="click_Guardar">
                 <StackPanel>
-                    <!--><Image Source="Imagenes/Tarjetas.png" Width="38"/>-->
-                    <TextBlock>Guardar</TextBlock>
+                    <Image Source="pack://application:,,,/Imagenes/Guardar.png" Width="38"/>
                 </StackPanel>
             </Button>
         </Grid>
-        <TextBlock Grid.Column="2"/>
     </Grid>
 </UserControl>

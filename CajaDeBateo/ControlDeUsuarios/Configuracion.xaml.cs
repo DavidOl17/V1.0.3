@@ -32,7 +32,6 @@ namespace CajaDeBateo.ControlDeUsuarios
             CreditosMensuales = CreditMensLeidos;
             ConfigPath = ConfigFilePath;
             ConfiguracionCantidadCreditosMensuales.Text = CreditosMensuales.ToString();
-            ConfiguracionCantidadCreditosMensuales.Focus();
         }
 
         private void BtnCancelarConfiguracion_Click(object sender, RoutedEventArgs e)

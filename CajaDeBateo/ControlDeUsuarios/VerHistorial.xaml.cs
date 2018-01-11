@@ -61,7 +61,6 @@ namespace CajaDeBateo.ControlDeUsuarios
             {
                 lblDato.Visibility = Visibility.Hidden;
                 TlblDato.Visibility = Visibility.Visible;
-                TlblDato.Focus();
             }
         }
 

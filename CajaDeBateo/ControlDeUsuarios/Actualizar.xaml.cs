@@ -3,17 +3,9 @@ using CajaDeBateo.ComunicacionArduino;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Data;
 
 namespace CajaDeBateo.ControlDeUsuarios
@@ -30,10 +22,18 @@ namespace CajaDeBateo.ControlDeUsuarios
         private bool ArduinoConectado;
         private String AuxPerm = "";
         private String AuxTem = "";
+        private String IdActual;
+        private DateTime FechaSeleccionada;
+        private int FilaSeleccionada;
+        private string data;
+        private DataTable Tabla;
 
         public Actualizar(int puerto, string[] puertos)
         {
             InitializeComponent();
+            FechaSeleccionada = new DateTime();
+
+            CalendarActualizar.DisplayDateStart = DateTime.Today;
             try
             {
                 baseDeDatos = new DBConnect();
@@ -61,7 +61,6 @@ namespace CajaDeBateo.ControlDeUsuarios
             {
                 lblDato.Visibility = Visibility.Hidden;
                 TlblDato.Visibility = Visibility.Visible;
-                TlblDato.Focus();
             }
         }
 
@@ -84,7 +83,6 @@ namespace CajaDeBateo.ControlDeUsuarios
             }
         }
 
-        string data;
         private void Read(object sender, EventArgs e)
         {
             data = (string)sender;
@@ -99,7 +97,7 @@ namespace CajaDeBateo.ControlDeUsuarios
 
         private void BtnBuscarActualizar_Click(object sender, RoutedEventArgs e)
         {
-            ObtenerDatos();
+            ObtenerDatos(false);
 
             if (ArduinoConectado)
             {
@@ -116,14 +114,22 @@ namespace CajaDeBateo.ControlDeUsuarios
             }
         }
 
-        void ObtenerDatos()
+        private void ObtenerDatos(bool Actualizar)
         {
             String Arg;
-            if (ArduinoConectado)
-                Arg = lblDato.Content.ToString();
+            if (Actualizar)
+            {
+                Arg = IdActual;
+            }
             else
-                Arg = TlblDato.Text;
+            {
+                if (ArduinoConectado)
+                    Arg = lblDato.Content.ToString();
+                else
+                    Arg = TlblDato.Text;
+            }
 
+            Limpiar();
             List<String> Datos = baseDeDatos.ObtenerConCreditosDisponibles(Arg);
             if (Datos.Count == 1 && Datos.ElementAt(0) == ".")
             {
@@ -137,13 +143,13 @@ namespace CajaDeBateo.ControlDeUsuarios
             }
             else
             {
-                DataTable Tabla = new DataTable();
+                Tabla = new DataTable();
 
                 Tabla.Columns.Add(new DataColumn("Tipo", typeof(String)));
                 Tabla.Columns.Add(new DataColumn("Fecha", typeof(String)));
                 Tabla.Columns.Add(new DataColumn("Vencimiento", typeof(String)));
-                Tabla.Columns.Add(new DataColumn("Créditos Adquiridos", typeof(String)));
-                Tabla.Columns.Add(new DataColumn("Créditos Disponibles", typeof(String)));
+                Tabla.Columns.Add(new DataColumn("Creditos_Adquiridos", typeof(String)));
+                Tabla.Columns.Add(new DataColumn("Creditos_Disponibles", typeof(String)));
 
                 for (int i = 0; i < Datos.Count; i++)
                 {
@@ -158,7 +164,21 @@ namespace CajaDeBateo.ControlDeUsuarios
                     Tabla.Rows.Add(Fila);
                 }
                 DataGridActualizar.ItemsSource = Tabla.DefaultView;
+                ContCalendarActualizar.Visibility = Visibility.Hidden;
+                DataGridActualizar.Visibility = Visibility.Visible;
+                //BtnGuardarActualizar.IsEnabled = false;
+                IdActual = Arg;
             }
+        }
+
+        private void Limpiar()
+        {
+            DataGridActualizar.ItemsSource = new DataTable().DefaultView;
+            DataGridActualizar.Visibility = Visibility.Visible;
+            ContCalendarActualizar.Visibility = Visibility.Hidden;
+            //BtnGuardarActualizar.IsEnabled = false;
+            BtnBuscarActualizar.IsEnabled = true;
+            IdActual = "";
         }
 
         private void TlblDato_TextChanged(object sender, TextChangedEventArgs e)
@@ -187,8 +207,51 @@ namespace CajaDeBateo.ControlDeUsuarios
         {
             if (e.Key == Key.Return)
             {
-                ObtenerDatos();
+                ObtenerDatos(false);
             }
+        }
+
+        private void Row_DoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            DataGridRow Row = sender as DataGridRow;
+            FilaSeleccionada = Row.GetIndex();
+
+            DataGridActualizar.Visibility = Visibility.Hidden;
+            ContCalendarActualizar.Visibility = Visibility.Visible;
+            CalendarActualizar.SelectedDate = null;
+            BtnCalendarAceptar.IsEnabled = false;
+        }
+
+        private void BtnCalendarAceptar_Click(object sender, RoutedEventArgs e)
+        {
+            DataGridActualizar.Visibility = Visibility.Visible;
+            ContCalendarActualizar.Visibility = Visibility.Hidden;
+            FechaSeleccionada = CalendarActualizar.SelectedDate.Value;
+            //BtnGuardarActualizar.IsEnabled = true;
+            BtnCalendarAceptar.IsEnabled = false;
+
+            /*Verificar si la fecha de vencimiento del elemento ubicado en la fila FilaActual es
+            diferente a FechaSeleccionada. Si es así modificarlo en la base de datos*/
+            //d.Rows[0].Field<string>(3);
+            baseDeDatos.ModificarFechaVencimiento(IdActual,
+                Tabla.Rows[FilaSeleccionada].Field<String>(1),
+                FechaSeleccionada.ToString("dd/MM/yyyy"),
+                Tabla.Rows[FilaSeleccionada].Field<String>(0));
+            ObtenerDatos(true);
+
+        }
+
+        private void BtnCalendarCancelar_Click(object sender, RoutedEventArgs e)
+        {
+            DataGridActualizar.Visibility = Visibility.Visible;
+            ContCalendarActualizar.Visibility = Visibility.Hidden;
+            FechaSeleccionada = new DateTime();
+        }
+
+        private void CalendarActualizar_SelectedDatesChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(!BtnCalendarAceptar.IsEnabled)
+                BtnCalendarAceptar.IsEnabled = true;
         }
     }
 }

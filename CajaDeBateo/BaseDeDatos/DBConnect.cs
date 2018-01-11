@@ -115,8 +115,8 @@ namespace CajaDeBateo.BaseDeDatos
             DateTime fecha = DateTime.Now;
             DateTime vencimiento = fecha;
             vencimiento=vencimiento.AddMonths(1);
-            string query = "INSERT INTO creditos_mensuales VALUES(" + idTarjeta + ",STR_TO_DATE(\'" +
-                fecha.ToString("dd/MM/yyyy") + "\',\'%d/%m/%Y\'), STR_TO_DATE(\'" + vencimiento.ToString("dd/MM/yyyy") +
+            string query = "INSERT INTO creditos_mensuales VALUES(" + idTarjeta + "," +
+                fecha.ToString("dd/MM/yyyy") + ", STR_TO_DATE(\'" + vencimiento.ToString("dd/MM/yyyy") +
                 "\',\'%d/%m/%Y\')" + "," + Creditos.ToString() + "," + Creditos.ToString() + ")";
 
             //open connection
@@ -172,10 +172,10 @@ namespace CajaDeBateo.BaseDeDatos
             DateTime fecha = DateTime.Now;
             DateTime vencimiento = fecha;
             vencimiento = vencimiento.AddMonths(1);
-            string query = "INSERT INTO creditos_aderidos VALUES(" + idTarjeta + ",STR_TO_DATE(\'" +
-                fecha.ToString("dd/MM/yyyy HH:mm:ss") + "\',\'%d/%m/%Y %H:%i:%s\'), STR_TO_DATE(\'" + 
-                vencimiento.ToString("dd/MM/yyyy") + "\',\'%d/%m/%Y\')" + "," + creditos.ToString() + "," + 
-                creditos.ToString() + ")";
+            string query = "INSERT INTO creditos_aderidos VALUES(" + idTarjeta + "," +
+                fecha.ToString("dd/MM/yyyy HH:mm:ss") + ", STR_TO_DATE(\'" + 
+                vencimiento.ToString("dd/MM/yyyy") + "\',\'%d/%m/%Y\')" + "," + 
+                creditos.ToString() + "," + creditos.ToString() + ")";
 
             //open connection
             if (this.OpenConnection())
@@ -204,9 +204,41 @@ namespace CajaDeBateo.BaseDeDatos
         }
         //Update statement
 
-        public void ModificarFechaVencimiento(String id_tarjeta, String FechaAdicion,String NuevaVencimiento)
+        public void ModificarFechaVencimiento(String id_tarjeta, String FechaAdicion,
+            String NuevoVencimiento, String Tabla)
         {
-            //STR_TO_DATE(\'"
+            string query = "";
+
+            if(Tabla == "Mensuales")
+            {
+                query = "UPDATE creditos_mensuales " +
+                    "SET fecha_vencimiento = STR_TO_DATE(\'" + NuevoVencimiento + "\',\'%d/%m/%Y\') " +
+                    "WHERE id_tarjeta = " + id_tarjeta + " AND fecha_adicion = \'" + FechaAdicion + "\'";
+            }
+            else if(Tabla == "Adicionales")
+            {
+                query = "UPDATE creditos_aderidos " +
+                    "SET fecha_vencimiento = STR_TO_DATE(\'" + NuevoVencimiento + "\',\'%d/%m/%Y\') " +
+                    "WHERE id_tarjeta = " + id_tarjeta + " AND fecha_adicion = \'" + FechaAdicion + "\'";
+            }
+
+            Console.WriteLine(query);
+            if (this.OpenConnection())
+            {
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception e)
+                {
+                    String Val = e.Message;
+                    MessageBox.Show("Error al ejecutar la petición. Contacte a soporte. " + 
+                        e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    this.CloseConnection();
+                }
+                this.CloseConnection();
+            }
         }
 
         public int ActDesactTarjeta(String id_tarjeta, int Accion)
@@ -415,20 +447,16 @@ namespace CajaDeBateo.BaseDeDatos
                     String Aderidos = Reader[3].ToString();
                     String Disponibles = Reader[4].ToString();
 
-                    int Index = Adicion.LastIndexOf("12:00:00 a. m.");
-                    if(Index > 0)
+                    Vencimiento = Vencimiento.Substring(0, 10);
+                    int Index = Adicion.LastIndexOf(" ");
+                    if (Index > 0)
                     {
-                        Adicion = Adicion.Substring(0, Index - 1);
-                        Tipo = "Mensuales";
+                        Tipo = "Adicionales";
+                        Adicion = Adicion.Substring(0, Index);
                     }
                     else
                     {
-                        Tipo = "Adicionales";
-                    }
-                    Index = Vencimiento.LastIndexOf("12:00:00 a. m.");
-                    if(Index > 0)
-                    {
-                        Vencimiento = Vencimiento.Substring(0, Index - 1);
+                        Tipo = "Mensuales";
                     }
 
                     String CadAux = Tipo + "|" + Adicion + "|" + Vencimiento + "|" + Aderidos + "|" + Disponibles;
@@ -468,20 +496,16 @@ namespace CajaDeBateo.BaseDeDatos
                     String Aderidos = Reader[3].ToString();
                     String Disponibles = Reader[4].ToString();
 
-                    int Index = Adicion.LastIndexOf("12:00:00 a. m.");
+                    Vencimiento = Vencimiento.Substring(0, 10);
+                    int Index = Adicion.LastIndexOf(" ");
                     if (Index > 0)
                     {
-                        Adicion = Adicion.Substring(0, Index - 1);
-                        Tipo = "Mensuales";
+                        Tipo = "Adicionales";
+                        Adicion = Adicion.Substring(0, Index);
                     }
                     else
                     {
-                        Tipo = "Adicionales";
-                    }
-                    Index = Vencimiento.LastIndexOf("12:00:00 a. m.");
-                    if (Index > 0)
-                    {
-                        Vencimiento = Vencimiento.Substring(0, Index - 1);
+                        Tipo = "Mensuales";
                     }
 
                     String CadAux = Tipo + "|" + Adicion + "|" + Vencimiento + "|" + Aderidos + "|" + Disponibles;
@@ -520,21 +544,12 @@ namespace CajaDeBateo.BaseDeDatos
                     String Aderidos = Reader[3].ToString();
                     String Disponibles = Reader[4].ToString();
 
-                    int Index = Adicion.LastIndexOf("12:00:00 a. m.");
+                    Vencimiento = Vencimiento.Substring(0, 10);
+                    int Index = Adicion.LastIndexOf(" ");
                     if (Index > 0)
-                    {
-                        Adicion = Adicion.Substring(0, Index - 1);
-                        Tipo = "Mensuales";
-                    }
-                    else
-                    {
                         Tipo = "Adicionales";
-                    }
-                    Index = Vencimiento.LastIndexOf("12:00:00 a. m.");
-                    if (Index > 0)
-                    {
-                        Vencimiento = Vencimiento.Substring(0, Index - 1);
-                    }
+                    else
+                        Tipo = "Mensuales";
 
                     String CadAux = Tipo + "|" + Adicion + "|" + Vencimiento + "|" + Aderidos + "|" + Disponibles;
                     Datos.Add(CadAux);
