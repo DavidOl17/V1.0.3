@@ -92,7 +92,7 @@ namespace CajaDeBateo.BaseDeDatos
         public bool AgregarTarjeta()
         {
             DateTime fecha = DateTime.Now;
-            string query = "INSERT INTO tarjeta  VALUES(NULL, '"+fecha.ToString("dd/MM/yyyy") +"', 1)";
+            string query = "INSERT INTO tarjeta  VALUES(NULL, '"+fecha.ToString("dd/MM/yyyy") +"', 0)";
 
             //open connection
             if (this.OpenConnection())
