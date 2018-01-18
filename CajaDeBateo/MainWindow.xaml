@@ -152,6 +152,14 @@
                     <TextBlock>Respaldar BD</TextBlock>
                 </StackPanel>
             </Button>
+            <Button x:Name="btnRecRespaldoBD" HorizontalAlignment="Stretch" Margin="0,0,0,0"  
+                    VerticalAlignment="Stretch" FontFamily="Showcard Gothic" FontSize="16" 
+                    VerticalContentAlignment="Center" Grid.Column="0" Grid.Row="3">
+                <StackPanel>
+                    <Image Source="Imagenes/Respaldo.png" Width="38"/>
+                    <TextBlock>Recuperar BD</TextBlock>
+                </StackPanel>
+            </Button>
             
 
             <Button x:Name="btnRegresar" HorizontalAlignment="Stretch" Margin="0,0,0,0"  

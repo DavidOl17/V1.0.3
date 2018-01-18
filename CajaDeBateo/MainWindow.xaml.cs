@@ -145,11 +145,12 @@ namespace CajaDeBateo
             agregarCreditos[1] = btnMasCreditos;
             agregarCreditosC = new ControladorMenu(ref agregarCreditos, 2);
 
-            configuracion = new Button[3];
+            configuracion = new Button[4];
             configuracion[0] = btnConfigurarCreditosMensuales;
             configuracion[1] = btnAcercaNosotros;
             configuracion[2] = btnRespaldoBD;
-            configuracionC = new ControladorMenu(ref configuracion, 3);
+            configuracion[3] = btnRecRespaldoBD;
+            configuracionC = new ControladorMenu(ref configuracion,4);
 
             //Configuracion de eventos
             btnTarjetas.Click += new RoutedEventHandler(btnClick);
@@ -168,6 +169,7 @@ namespace CajaDeBateo
             btnAcercaNosotros.Click += new RoutedEventHandler(btnClick);
             btnConfigurarCreditosMensuales.Click += new RoutedEventHandler(btnClick);
             btnRespaldoBD.Click += new RoutedEventHandler(btnClick);
+            btnRecRespaldoBD.Click += new RoutedEventHandler(btnClick);
             controlador = new ControladorMenus(ref principalC, ref tarjetaC, ref creditosC, ref agregarCreditosC, ref configuracionC);
             
         }
@@ -221,6 +223,10 @@ namespace CajaDeBateo
                 case "btnRespaldoBD":
                     DBConnect backup = new DBConnect();
                     backup.Backup();
+                    break;
+                case "btnRecRespaldoBD":
+                    DBConnect recup = new DBConnect();
+                    recup.Restore();
                     break;
                 case "btnConfigurarCreditosMensuales":
                     stkUSerControlContainer.Children.Remove(controlDeVista);

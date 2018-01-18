@@ -16,7 +16,9 @@ namespace CajaDeBateo.BaseDeDatos
 {
     public class DBConnect
     {
-        private MySqlConnection connection;
+        private String Verificador = "<>73WZK4TRG9CFXX4FYCG5NHA3FXVW7D<>";
+
+        MySqlConnection connection;
         private string server;
         private string database;
         private string uid;
@@ -32,8 +34,8 @@ namespace CajaDeBateo.BaseDeDatos
         //Initialize values
         private void Initialize()
         {
-            server = "192.168.100.27"; password = "12345"; uid = "caja";
-            //server = "localhost"; password = ""; uid = "root";
+            //server = "192.168.100.27"; password = "12345"; uid = "caja";
+            server = "localhost"; password = ""; uid = "root";
             database = "caja_bateo";
             
             string connectionString;
@@ -346,16 +348,9 @@ namespace CajaDeBateo.BaseDeDatos
         public void Backup()
         {
             DateTime Time = DateTime.Now;
-            int year = Time.Year;
-            int month = Time.Month;
-            int day = Time.Day;
-            int hour = Time.Hour;
-            int minute = Time.Minute;
-            int second = Time.Second;
+            String NombreArchivo = Time.Year + "-" + Time.Month + "-" + Time.Day + " " + 
+                Time.Hour + "-" + Time.Minute + "-" + Time.Second;
 
-            string NombreArchivo = year + "-" + month + "-" + day + " " + hour + "-" + minute + "-" + second;
-
-            //Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
             dlg.DefaultExt = ".cbku";
             dlg.Filter = "(*.bakcb)|*.bakcb";
@@ -371,8 +366,9 @@ namespace CajaDeBateo.BaseDeDatos
                   File.Delete(dlg.FileName);
                 StreamWriter Out = new StreamWriter(dlg.FileName);
 
-                Out.WriteLine("//Tostatronic no se hace responsable por daños causados a sus datos provocados por" +
-                    " la modificación de este archivo");
+                Out.WriteLine(Verificador);
+                Out.WriteLine("//Tostatronic A.C. de C.V. no se hace responsable por daños o perdidas causados a sus datos " +
+                    "provocados por la modificación de este archivo");
 
                 if (this.OpenConnection())
                 {
@@ -383,40 +379,13 @@ namespace CajaDeBateo.BaseDeDatos
                         String Aux = "INSERT INTO tarjeta VALUES (" + Reader[0].ToString() +
                             ",'" + Reader[1].ToString() + "'," + Reader[2].ToString() + ")";
                         Out.WriteLine(Aux);
+                        int Auto = int.Parse(Reader[0].ToString()) + 1;
                     }
                     this.CloseConnection();
-                }
-                else
-                {
-                    MessageBox.Show("Error al realizar el respaldo. Contacte a soporte. ", "Error", 
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                }
 
-                if (this.OpenConnection())
-                {
-                    MySqlCommand cmd = new MySqlCommand(q2, connection);
-                    MySqlDataReader Reader = cmd.ExecuteReader();
-                    while (Reader.Read())
-                    {
-                        String Vencimiento = Reader[2].ToString();
-                        Vencimiento = Vencimiento.Substring(0, Vencimiento.IndexOf(" "));
-                        String Aux = "INSERT INTO creditos_mensuales VALUES (" + Reader[0].ToString() +
-                            ",'" + Reader[1].ToString() + "'," + "STR_TO_DATE('" + Vencimiento +
-                            "','%d/%m/%Y')," + Reader[3].ToString() + "," + Reader[4].ToString() + ")";
-                        Out.WriteLine(Aux);
-                    }
-                    this.CloseConnection();
-                }
-                else
-                {
-                    MessageBox.Show("Error al realizar el respaldo. Contacte a soporte. ", "Error",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-
-                if (this.OpenConnection())
-                {
-                    MySqlCommand cmd = new MySqlCommand(q3, connection);
-                    MySqlDataReader Reader = cmd.ExecuteReader();
+                    this.OpenConnection();
+                    cmd = new MySqlCommand(q2, connection);
+                    Reader = cmd.ExecuteReader();
                     while (Reader.Read())
                     {
                         String Vencimiento = Reader[2].ToString();
@@ -427,90 +396,179 @@ namespace CajaDeBateo.BaseDeDatos
                         Out.WriteLine(Aux);
                     }
                     this.CloseConnection();
+
+                    this.OpenConnection();
+                    cmd = new MySqlCommand(q3, connection);
+                    Reader = cmd.ExecuteReader();
+                    while (Reader.Read())
+                    {
+                        String Vencimiento = Reader[2].ToString();
+                        Vencimiento = Vencimiento.Substring(0, Vencimiento.IndexOf(" "));
+                        String Aux = "INSERT INTO creditos_mensuales VALUES (" + Reader[0].ToString() +
+                            ",'" + Reader[1].ToString() + "'," + "STR_TO_DATE('" + Vencimiento +
+                            "','%d/%m/%Y')," + Reader[3].ToString() + "," + Reader[4].ToString() + ")";
+                        Out.WriteLine(Aux);
+                    }
+                    this.CloseConnection();
+                    Out.WriteLine(Verificador);
                 }
                 else
                 {
-                    MessageBox.Show("Error al realizar el respaldo. Contacte a soporte. ", "Error",
+                    MessageBox.Show("Error al realizar el respaldo. Contacte a soporte. ", "Error", 
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                Out.WriteLine("//**\\QWERTYUIOPASDFGHJKLZXCVBNM//**\\");
                 Out.Close();
                 MessageBox.Show("Respaldo realizado con éxito. ", "Completado", MessageBoxButton.OK);
             }
-
-            /*
-             DateTime Time = DateTime.Now;
-             int year = Time.Year;
-             int month = Time.Month;
-             int day = Time.Day;
-             int hour = Time.Hour;
-             int minute = Time.Minute;
-             int second = Time.Second;
-             int millisecond = Time.Millisecond;
-
-             string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + year + "-" + month + "-" + 
-                 day + "-" + hour + "-" + minute + "-" + second + "-" + millisecond + ".sql";
-             try
-             {
-                 //Save file to C:\ with the current date as a filename
-                 StreamWriter file = new StreamWriter(path); ;
-
-                 ProcessStartInfo psi = new ProcessStartInfo();
-                 psi.FileName = "mysqldump";
-                 psi.RedirectStandardInput = false;
-                 psi.RedirectStandardOutput = true;
-                 psi.Arguments = string.Format(@"-u{0} -p{1} -h{2} {3}","root", "", "localhost", "caja_bateo");
-                 psi.UseShellExecute = false;
-
-                 Process process = Process.Start(psi);
-
-                 string output;
-                 output = process.StandardOutput.ReadToEnd();
-                 file.WriteLine(output);
-                 process.WaitForExit();
-                 file.Close();
-                 process.Close();
-                 MessageBox.Show("Respaldo exitoso","Succes",MessageBoxButton.OK,MessageBoxImage.Information);
-             }
-             catch (IOException e)
-             {
-                 MessageBox.Show("Error al realizar el respaldo. " + e.Message, "Error", MessageBoxButton.OK,MessageBoxImage.Error);
-             }
-             catch(System.ComponentModel.Win32Exception e)
-             {
-                 MessageBox.Show("Error al acceder a la base de datos. " + e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-             }*/
         }
 
         //Restore
-        public void Restore(string path)
+        public void Restore()
         {
-            try
+            MessageBoxResult Boxresult = MessageBox.Show("¿Reemplazar datos actuales con guardados en respaldo?", "Confirmación", 
+                MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (Boxresult == MessageBoxResult.Yes)
             {
-                //Read file from C:\
-                StreamReader file = new StreamReader(path);
-                string input = file.ReadToEnd();
-                file.Close();
+                Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+                dlg.DefaultExt = ".cbku";
+                dlg.Filter = "(*.bakcb)|*.bakcb";
+                bool result = dlg.ShowDialog() ?? default(bool);
+                bool ArchivoCorrecto;
 
-                ProcessStartInfo psi = new ProcessStartInfo();
-                psi.FileName = "mysql";
-                psi.RedirectStandardInput = true;
-                psi.RedirectStandardOutput = false;
-                psi.Arguments = string.Format(@"-u{0} -p{1} -h{2} {3}",
-                    uid, password, server, database);
-                psi.UseShellExecute = false;
+                string q1 = "DROP TABLE IF EXISTS creditos_mensuales, creditos_aderidos,tarjeta";
+                string q2 = "CREATE TABLE tarjeta (id_tarjeta int(11) NOT NULL, fecha_creacion varchar(20) NOT NULL," +
+                    "status int(11) NOT NULL)";
+                string q3 = "CREATE TABLE creditos_aderidos (id_tarjeta int(11) NOT NULL,fecha_adicion varchar(25) NOT NULL," +
+                    "fecha_vencimiento date NOT NULL,creditos_aderidos int(11) NOT NULL,creditos_disponibles int(11) NOT NULL)";
+                string q4 = "CREATE TABLE creditos_mensuales (id_tarjeta int(11) NOT NULL,fecha_adicion varchar(15) NOT NULL," +
+                    "fecha_vencimiento date NOT NULL,creditos_aderidos int(11) NOT NULL,creditos_disponibles int(11) NOT NULL)";
 
+                if (result)
+                {
+                    if (this.OpenConnection())
+                    {
+                        StreamReader In = new StreamReader(dlg.FileName);
+                        bool IdentI = false;
+                        bool IdentF = false;
+                        bool PrimerasLinea = true;
+                        string Aux;
+                        ArchivoCorrecto = true;
 
-                Process process = Process.Start(psi);
-                process.StandardInput.WriteLine(input);
-                process.StandardInput.Close();
-                process.WaitForExit();
-                process.Close();
-            }
-            catch (IOException ex)
-            {
-                MessageBox.Show("Error al recuperar datos del respaldo. " + ex.Message, "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                        Aux = In.ReadLine();
+                        if (Aux == null || Aux != Verificador)
+                        {
+                            MessageBox.Show("Archivo no compatible o desconocido.", "Error",
+                                MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            ArchivoCorrecto = false;
+                        }
+                        else
+                        {
+                            IdentI = true;
+                        }
+                        MySqlCommand cmd;
+                        if (ArchivoCorrecto)
+                        {
+                            cmd = new MySqlCommand(q1, connection);
+                            cmd.ExecuteNonQuery();
+                            this.CloseConnection();
+
+                            this.OpenConnection();
+                            cmd = new MySqlCommand(q2, connection);
+                            cmd.ExecuteNonQuery();
+                            this.CloseConnection();
+
+                            this.OpenConnection();
+                            cmd = new MySqlCommand(q3, connection);
+                            cmd.ExecuteNonQuery();
+                            this.CloseConnection();
+
+                            this.OpenConnection();
+                            cmd = new MySqlCommand(q4, connection);
+                            cmd.ExecuteNonQuery();
+                            this.CloseConnection();
+                        }
+                        while (!In.EndOfStream && ArchivoCorrecto)
+                        {
+                            Aux = In.ReadLine();
+                            if (Aux == Verificador && !IdentF)
+                            {
+                                IdentF = true;
+                                break;
+                            }
+
+                            if (PrimerasLinea && IdentI)
+                            {
+                                PrimerasLinea = false;
+                            }
+                            else
+                            {
+                                this.OpenConnection();
+                                cmd = new MySqlCommand(Aux, connection);
+                                if (cmd.ExecuteNonQuery() < 1)
+                                {
+                                    Boxresult = MessageBox.Show("Error al realizar consulta. Archivo posiblemente corrupto." +
+                                        "¿Desea continuar?", "Error", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                                    if (Boxresult == MessageBoxResult.No)
+                                        break;
+                                }
+                                this.CloseConnection();
+                            }
+                        }
+                        if (!IdentF)
+                        {
+                            MessageBox.Show("Archivo incompleto. Posible pérdida de datos. ", "Error",
+                                            MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        }
+                        if (ArchivoCorrecto)
+                        {
+                            this.OpenConnection();
+                            Aux = "ALTER TABLE tarjeta ADD PRIMARY KEY(id_tarjeta)";
+                            cmd = new MySqlCommand(Aux, connection);
+                            cmd.ExecuteNonQuery();
+                            this.CloseConnection();
+
+                            this.OpenConnection();
+                            Aux = "ALTER TABLE tarjeta MODIFY id_tarjeta int(11) NOT NULL AUTO_INCREMENT";
+                            cmd = new MySqlCommand(Aux, connection);
+                            cmd.ExecuteNonQuery();
+                            this.CloseConnection();
+
+                            this.OpenConnection();
+                            Aux = "ALTER TABLE creditos_mensuales ADD PRIMARY KEY(id_tarjeta,fecha_adicion)";
+                            cmd = new MySqlCommand(Aux, connection);
+                            cmd.ExecuteNonQuery();
+                            this.CloseConnection();
+
+                            this.OpenConnection();
+                            Aux = "ALTER TABLE creditos_mensuales ADD CONSTRAINT tarjeta_mensual_res FOREIGN KEY(id_tarjeta)" +
+                                " REFERENCES tarjeta (id_tarjeta) ON DELETE CASCADE ON UPDATE CASCADE";
+                            cmd = new MySqlCommand(Aux, connection);
+                            cmd.ExecuteNonQuery();
+                            this.CloseConnection();
+
+                            this.OpenConnection();
+                            Aux = "ALTER TABLE creditos_aderidos ADD PRIMARY KEY (id_tarjeta,fecha_adicion)";
+                            cmd = new MySqlCommand(Aux, connection);
+                            cmd.ExecuteNonQuery();
+                            this.CloseConnection();
+
+                            this.OpenConnection();
+                            Aux = "ALTER TABLE creditos_aderidos ADD CONSTRAINT tarjeta_adicionales_res FOREIGN KEY(id_tarjeta) " +
+                                "REFERENCES tarjeta (id_tarjeta) ON DELETE CASCADE ON UPDATE CASCADE";
+                            cmd = new MySqlCommand(Aux, connection);
+                            cmd.ExecuteNonQuery();
+                            this.CloseConnection();
+
+                            In.Close();
+                            MessageBox.Show("Recuperación completada. ", "Completado", MessageBoxButton.OK);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error al iniciar conección. Consulte a soporte. ", "Error",
+                            MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
             }
         }
 
