@@ -52,6 +52,18 @@ namespace CajaDeBateo.ControlDeUsuarios
                 MessageBox.Show("Error. Conección con lectora/escritora no encontrada." + e.Message,
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            finally
+            {
+                Thread.Sleep(2000);
+                try
+                {
+                    arduino.Write("2");
+                }
+                catch (Exception e)
+                {
+                    String Valor = e.Message;
+                }
+            }
             //arduino.Reset();
             this.IsVisibleChanged += ActivarTarjeta_IsVisibleChanged;
         }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using static System.Net.Mime.MediaTypeNames;
 using System.Windows.Controls;
+using System.Data;
 
 
 namespace CajaDeBateo.BaseDeDatos
@@ -31,13 +32,13 @@ namespace CajaDeBateo.BaseDeDatos
         //Initialize values
         private void Initialize()
         {
-            server = "localhost";
+            server = "192.168.100.27"; password = "12345"; uid = "caja";
+            //server = "localhost"; password = ""; uid = "root";
             database = "caja_bateo";
-            uid = "root";
-            password = "";
+            
             string connectionString;
-            connectionString = "SERVER=" + server + ";" + "DATABASE=" +
-            database + ";" + "UID=" + uid + ";" + "PASSWORD=" + password + ";";
+            connectionString = "SERVER=" + server + ";" + "DATABASE=" + database + ";" + 
+                "UID=" + uid + ";" + "PASSWORD=" + password + ";";
 
             connection = new MySqlConnection(connectionString);
         }
@@ -55,11 +56,13 @@ namespace CajaDeBateo.BaseDeDatos
                 switch (ex.Number)
                 {
                     case 0:
-                        MessageBox.Show("No se pudo conectar al servidor. LLame a soporte", "Error de conexion",MessageBoxButton.OK,MessageBoxImage.Error);
+                        MessageBox.Show("No se pudo conectar al servidor. LLame a soporte", 
+                            "Error de conexion",MessageBoxButton.OK,MessageBoxImage.Error);
                         break;
 
                     case 1045:
-                        MessageBox.Show("Nombre de usuario o contraseña incorrectas","Error de datos",MessageBoxButton.OK,MessageBoxImage.Error);
+                        MessageBox.Show("Nombre de usuario o contraseña incorrectas",
+                            "Error de datos",MessageBoxButton.OK,MessageBoxImage.Error);
                         break;
                 }
                 return false;
@@ -115,10 +118,9 @@ namespace CajaDeBateo.BaseDeDatos
             DateTime fecha = DateTime.Now;
             DateTime vencimiento = fecha;
             vencimiento=vencimiento.AddMonths(1);
-            string query = "INSERT INTO creditos_mensuales VALUES(" + idTarjeta + "," +
-                fecha.ToString("dd/MM/yyyy") + ", STR_TO_DATE(\'" + vencimiento.ToString("dd/MM/yyyy") +
+            string query = "INSERT INTO creditos_mensuales VALUES(" + idTarjeta + ",'" +
+                fecha.ToString("dd/MM/yyyy") + "',STR_TO_DATE(\'" + vencimiento.ToString("dd/MM/yyyy") +
                 "\',\'%d/%m/%Y\')" + "," + Creditos.ToString() + "," + Creditos.ToString() + ")";
-
             //open connection
             if (this.OpenConnection())
             {
@@ -172,8 +174,8 @@ namespace CajaDeBateo.BaseDeDatos
             DateTime fecha = DateTime.Now;
             DateTime vencimiento = fecha;
             vencimiento = vencimiento.AddMonths(1);
-            string query = "INSERT INTO creditos_aderidos VALUES(" + idTarjeta + "," +
-                fecha.ToString("dd/MM/yyyy HH:mm:ss") + ", STR_TO_DATE(\'" + 
+            string query = "INSERT INTO creditos_aderidos VALUES(" + idTarjeta + ",'" +
+                fecha.ToString("dd/MM/yyyy HH:mm:ss") + "',STR_TO_DATE(\'" + 
                 vencimiento.ToString("dd/MM/yyyy") + "\',\'%d/%m/%Y\')" + "," + 
                 creditos.ToString() + "," + creditos.ToString() + ")";
 
@@ -208,7 +210,6 @@ namespace CajaDeBateo.BaseDeDatos
             String NuevoVencimiento, String Tabla)
         {
             string query = "";
-
             if(Tabla == "Mensuales")
             {
                 query = "UPDATE creditos_mensuales " +
@@ -221,8 +222,6 @@ namespace CajaDeBateo.BaseDeDatos
                     "SET fecha_vencimiento = STR_TO_DATE(\'" + NuevoVencimiento + "\',\'%d/%m/%Y\') " +
                     "WHERE id_tarjeta = " + id_tarjeta + " AND fecha_adicion = \'" + FechaAdicion + "\'";
             }
-
-            Console.WriteLine(query);
             if (this.OpenConnection())
             {
                 MySqlCommand cmd = new MySqlCommand(query, connection);
@@ -344,7 +343,7 @@ namespace CajaDeBateo.BaseDeDatos
         }
 
         //Backup
-        public static void Backup()
+        public void Backup()
         {
             DateTime Time = DateTime.Now;
             int year = Time.Year;
@@ -353,40 +352,134 @@ namespace CajaDeBateo.BaseDeDatos
             int hour = Time.Hour;
             int minute = Time.Minute;
             int second = Time.Second;
-            int millisecond = Time.Millisecond;
 
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + year + "-" + month + "-" + 
-                day + "-" + hour + "-" + minute + "-" + second + "-" + millisecond + ".sql";
-            try
+            string NombreArchivo = year + "-" + month + "-" + day + " " + hour + "-" + minute + "-" + second;
+
+            //Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.DefaultExt = ".cbku";
+            dlg.Filter = "(*.bakcb)|*.bakcb";
+            dlg.FileName = NombreArchivo;
+            bool result = dlg.ShowDialog() ?? default(bool);
+
+            if (result)
             {
-                //Save file to C:\ with the current date as a filename
-                StreamWriter file = new StreamWriter(path); ;
+                string q1 = "SELECT * FROM tarjeta";
+                string q2 = "SELECT * FROM creditos_aderidos";
+                string q3 = "SELECT * FROM creditos_mensuales";
+                if(File.Exists(dlg.FileName))
+                  File.Delete(dlg.FileName);
+                StreamWriter Out = new StreamWriter(dlg.FileName);
 
-                ProcessStartInfo psi = new ProcessStartInfo();
-                psi.FileName = "mysqldump";
-                psi.RedirectStandardInput = false;
-                psi.RedirectStandardOutput = true;
-                psi.Arguments = string.Format(@"-u{0} -p{1} -h{2} {3}","root", "", "localhost", "caja_bateo");
-                psi.UseShellExecute = false;
+                Out.WriteLine("//Tostatronic no se hace responsable por daños causados a sus datos provocados por" +
+                    " la modificación de este archivo");
 
-                Process process = Process.Start(psi);
+                if (this.OpenConnection())
+                {
+                    MySqlCommand cmd = new MySqlCommand(q1, connection);
+                    MySqlDataReader Reader = cmd.ExecuteReader();
+                    while (Reader.Read())
+                    {
+                        String Aux = "INSERT INTO tarjeta VALUES (" + Reader[0].ToString() +
+                            ",'" + Reader[1].ToString() + "'," + Reader[2].ToString() + ")";
+                        Out.WriteLine(Aux);
+                    }
+                    this.CloseConnection();
+                }
+                else
+                {
+                    MessageBox.Show("Error al realizar el respaldo. Contacte a soporte. ", "Error", 
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
 
-                string output;
-                output = process.StandardOutput.ReadToEnd();
-                file.WriteLine(output);
-                process.WaitForExit();
-                file.Close();
-                process.Close();
-                MessageBox.Show("Respaldo exitoso","Succes",MessageBoxButton.OK,MessageBoxImage.Information);
+                if (this.OpenConnection())
+                {
+                    MySqlCommand cmd = new MySqlCommand(q2, connection);
+                    MySqlDataReader Reader = cmd.ExecuteReader();
+                    while (Reader.Read())
+                    {
+                        String Vencimiento = Reader[2].ToString();
+                        Vencimiento = Vencimiento.Substring(0, Vencimiento.IndexOf(" "));
+                        String Aux = "INSERT INTO creditos_mensuales VALUES (" + Reader[0].ToString() +
+                            ",'" + Reader[1].ToString() + "'," + "STR_TO_DATE('" + Vencimiento +
+                            "','%d/%m/%Y')," + Reader[3].ToString() + "," + Reader[4].ToString() + ")";
+                        Out.WriteLine(Aux);
+                    }
+                    this.CloseConnection();
+                }
+                else
+                {
+                    MessageBox.Show("Error al realizar el respaldo. Contacte a soporte. ", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+                if (this.OpenConnection())
+                {
+                    MySqlCommand cmd = new MySqlCommand(q3, connection);
+                    MySqlDataReader Reader = cmd.ExecuteReader();
+                    while (Reader.Read())
+                    {
+                        String Vencimiento = Reader[2].ToString();
+                        Vencimiento = Vencimiento.Substring(0, Vencimiento.IndexOf(" "));
+                        String Aux = "INSERT INTO creditos_aderidos VALUES (" + Reader[0].ToString() +
+                            ",'" + Reader[1].ToString() + "'," + "STR_TO_DATE('" + Vencimiento +
+                            "','%d/%m/%Y')," + Reader[3].ToString() + "," + Reader[4].ToString() + ")";
+                        Out.WriteLine(Aux);
+                    }
+                    this.CloseConnection();
+                }
+                else
+                {
+                    MessageBox.Show("Error al realizar el respaldo. Contacte a soporte. ", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                Out.WriteLine("//**\\QWERTYUIOPASDFGHJKLZXCVBNM//**\\");
+                Out.Close();
+                MessageBox.Show("Respaldo realizado con éxito. ", "Completado", MessageBoxButton.OK);
             }
-            catch (IOException e)
-            {
-                MessageBox.Show("Error al realizar el respaldo. " + e.Message, "Error", MessageBoxButton.OK,MessageBoxImage.Error);
-            }
-            catch(System.ComponentModel.Win32Exception e)
-            {
-                MessageBox.Show("Error al acceder a la base de datos. " + e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+
+            /*
+             DateTime Time = DateTime.Now;
+             int year = Time.Year;
+             int month = Time.Month;
+             int day = Time.Day;
+             int hour = Time.Hour;
+             int minute = Time.Minute;
+             int second = Time.Second;
+             int millisecond = Time.Millisecond;
+
+             string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\" + year + "-" + month + "-" + 
+                 day + "-" + hour + "-" + minute + "-" + second + "-" + millisecond + ".sql";
+             try
+             {
+                 //Save file to C:\ with the current date as a filename
+                 StreamWriter file = new StreamWriter(path); ;
+
+                 ProcessStartInfo psi = new ProcessStartInfo();
+                 psi.FileName = "mysqldump";
+                 psi.RedirectStandardInput = false;
+                 psi.RedirectStandardOutput = true;
+                 psi.Arguments = string.Format(@"-u{0} -p{1} -h{2} {3}","root", "", "localhost", "caja_bateo");
+                 psi.UseShellExecute = false;
+
+                 Process process = Process.Start(psi);
+
+                 string output;
+                 output = process.StandardOutput.ReadToEnd();
+                 file.WriteLine(output);
+                 process.WaitForExit();
+                 file.Close();
+                 process.Close();
+                 MessageBox.Show("Respaldo exitoso","Succes",MessageBoxButton.OK,MessageBoxImage.Information);
+             }
+             catch (IOException e)
+             {
+                 MessageBox.Show("Error al realizar el respaldo. " + e.Message, "Error", MessageBoxButton.OK,MessageBoxImage.Error);
+             }
+             catch(System.ComponentModel.Win32Exception e)
+             {
+                 MessageBox.Show("Error al acceder a la base de datos. " + e.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+             }*/
         }
 
         //Restore
@@ -421,19 +514,42 @@ namespace CajaDeBateo.BaseDeDatos
             }
         }
 
-        public List<String> ObtenerCreditosActivos(String idTarjeta)
+        public DataTable ObtenerCreditosActivos(String idTarjeta)
         {
-            List<String> Datos = new List<string>();
-            List<String> Aux = new List<string>()
-            {
-                "."
-            };
-
             string query = "SELECT * FROM creditos_mensuales WHERE id_tarjeta = " + idTarjeta +
                 " AND fecha_vencimiento > CURRENT_DATE() AND creditos_disponibles > 0" +
                 " UNION " +
                 "SELECT * FROM creditos_aderidos WHERE id_tarjeta = " + idTarjeta +
                 " AND fecha_vencimiento > CURRENT_DATE() AND creditos_disponibles > 0";
+
+            string querycom = "SELECT * FROM tarjeta WHERE id_tarjeta = " + idTarjeta;
+            DataTable Tabla = new DataTable();
+            Tabla.Columns.Add(new DataColumn("Tipo", typeof(String)));
+            Tabla.Columns.Add(new DataColumn("Fecha", typeof(String)));
+            Tabla.Columns.Add(new DataColumn("Vencimiento", typeof(String)));
+            Tabla.Columns.Add(new DataColumn("Créditos Adquiridos", typeof(String)));
+            Tabla.Columns.Add(new DataColumn("Créditos Disponibles", typeof(String)));
+
+            if (this.OpenConnection())
+            {
+                MySqlCommand cmd = new MySqlCommand(querycom, connection);
+                MySqlDataReader Reader = cmd.ExecuteReader();
+                int cont = 0;
+                while(Reader.Read())
+                {
+                    cont++;
+                }
+                if (cont == 0)
+                {
+                    DataRow Fila = Tabla.NewRow();
+                    Tabla.Rows.Add(Fila);
+                    return Tabla;
+                }
+            }
+            else
+            {
+                return null;
+            }
             if (this.OpenConnection())
             {
                 MySqlCommand cmd = new MySqlCommand(query, connection);
@@ -459,30 +575,55 @@ namespace CajaDeBateo.BaseDeDatos
                         Tipo = "Mensuales";
                     }
 
-                    String CadAux = Tipo + "|" + Adicion + "|" + Vencimiento + "|" + Aderidos + "|" + Disponibles;
-                    Datos.Add(CadAux);
+                    DataRow Fila = Tabla.NewRow();
+                    Tabla.Rows.Add(Fila);
+                    Fila[0] = Tipo;
+                    Fila[1] = Adicion;
+                    Fila[2] = Vencimiento;
+                    Fila[3] = Aderidos;
+                    Fila[4] = Disponibles;
                 }
                 this.CloseConnection();
             }
             else
             {
-                return Aux;
+                return null;
             }
-            return Datos;
+            return Tabla;
         }
 
-        public List<String> ObtenerHistorial(String idTarjeta)
+        public DataTable ObtenerHistorial(String idTarjeta)
         {
-            List<String> Datos = new List<string>();
-            List<String> Aux = new List<string>()
-            {
-                "."
-            };
-
             string query = "SELECT * FROM creditos_mensuales WHERE id_tarjeta = " + idTarjeta +
                 " UNION " +
                 "SELECT * FROM creditos_aderidos WHERE id_tarjeta = " + idTarjeta;
-            Console.WriteLine(query);
+            string querycom = "SELECT * FROM tarjeta WHERE id_tarjeta = " + idTarjeta;
+            DataTable Tabla = new DataTable();
+            Tabla.Columns.Add(new DataColumn("Tipo", typeof(String)));
+            Tabla.Columns.Add(new DataColumn("Fecha", typeof(String)));
+            Tabla.Columns.Add(new DataColumn("Vencimiento", typeof(String)));
+            Tabla.Columns.Add(new DataColumn("Créditos Adquiridos", typeof(String)));
+            Tabla.Columns.Add(new DataColumn("Créditos Disponibles", typeof(String)));
+            if (this.OpenConnection())
+            {
+                MySqlCommand cmd = new MySqlCommand(querycom, connection);
+                MySqlDataReader Reader = cmd.ExecuteReader();
+                int cont = 0;
+                while (Reader.Read())
+                {
+                    cont++;
+                }
+                if (cont == 0)
+                {
+                    DataRow Fila = Tabla.NewRow();
+                    Tabla.Rows.Add(Fila);
+                    return Tabla;
+                }
+            }
+            else
+            {
+                return null;
+            }
             if (this.OpenConnection())
             {
                 MySqlCommand cmd = new MySqlCommand(query, connection);
@@ -508,29 +649,62 @@ namespace CajaDeBateo.BaseDeDatos
                         Tipo = "Mensuales";
                     }
 
-                    String CadAux = Tipo + "|" + Adicion + "|" + Vencimiento + "|" + Aderidos + "|" + Disponibles;
-                    Datos.Add(CadAux);
+                    DataRow Fila = Tabla.NewRow();
+                    Tabla.Rows.Add(Fila);
+                    Fila[0] = Tipo;
+                    Fila[1] = Adicion;
+                    Fila[2] = Vencimiento;
+                    Fila[3] = Aderidos;
+                    Fila[4] = Disponibles;
                 }
                 this.CloseConnection();
             }
             else
             {
-                return Aux;
+                return null;
             }
-            return Datos;
+            return Tabla;
         }
 
-        public List<String> ObtenerConCreditosDisponibles(String idTarjeta)
+        public DataTable ObtenerConCreditosDisponibles(String idTarjeta)
         {
-            List<String> Datos = new List<string>();
-            List<String> Aux = new List<string>()
-            {
-                "."
-            };
-
             string query = "SELECT * FROM creditos_mensuales WHERE id_tarjeta = " + idTarjeta + " AND creditos_disponibles > 0" +
                 " UNION " +
                 "SELECT * FROM creditos_aderidos WHERE id_tarjeta = " + idTarjeta + " AND creditos_disponibles > 0";
+            string querycom = "SELECT * FROM tarjeta WHERE id_tarjeta = " + idTarjeta;
+            DataTable Tabla = new DataTable();
+            Tabla.Columns.Add(new DataColumn("Tipo", typeof(String)));
+            Tabla.Columns.Add(new DataColumn("Fecha", typeof(String)));
+            Tabla.Columns.Add(new DataColumn("Vencimiento", typeof(String)));
+            Tabla.Columns.Add(new DataColumn("Créditos Adquiridos", typeof(String)));
+            Tabla.Columns.Add(new DataColumn("Créditos Disponibles", typeof(String)));
+            if (this.OpenConnection())
+            {
+                try
+                {
+                    MySqlCommand cmd = new MySqlCommand(querycom, connection);
+                    MySqlDataReader Reader = cmd.ExecuteReader();
+                    int cont = 0;
+                    while (Reader.Read())
+                    {
+                        cont++;
+                    }
+                    if (cont == 0)
+                    {
+                        DataRow Fila = Tabla.NewRow();
+                        Tabla.Rows.Add(Fila);
+                        return Tabla;
+                    }
+                }
+                catch(Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+            }
+            else
+            {
+                return null;
+            }
             if (this.OpenConnection())
             {
                 MySqlCommand cmd = new MySqlCommand(query, connection);
@@ -547,20 +721,29 @@ namespace CajaDeBateo.BaseDeDatos
                     Vencimiento = Vencimiento.Substring(0, 10);
                     int Index = Adicion.LastIndexOf(" ");
                     if (Index > 0)
+                    {
                         Tipo = "Adicionales";
+                    }
                     else
+                    {
                         Tipo = "Mensuales";
+                    }
 
-                    String CadAux = Tipo + "|" + Adicion + "|" + Vencimiento + "|" + Aderidos + "|" + Disponibles;
-                    Datos.Add(CadAux);
+                    DataRow Fila = Tabla.NewRow();
+                    Tabla.Rows.Add(Fila);
+                    Fila[0] = Tipo;
+                    Fila[1] = Adicion;
+                    Fila[2] = Vencimiento;
+                    Fila[3] = Aderidos;
+                    Fila[4] = Disponibles;
                 }
                 this.CloseConnection();
             }
             else
             {
-                return Aux;
+                return null;
             }
-            return Datos;
+            return Tabla;
         }
     }
 

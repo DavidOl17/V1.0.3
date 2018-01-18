@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Data;
+using System.Threading;
 
 namespace CajaDeBateo.ControlDeUsuarios
 {
@@ -57,6 +58,19 @@ namespace CajaDeBateo.ControlDeUsuarios
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 ArduinoConectado = false;
             }
+            finally
+            {
+                Thread.Sleep(2000);
+                try
+                {
+                    arduino.Write("2");
+                }
+                catch (Exception e)
+                {
+                    String Valor = e.Message;
+                }
+            }
+
             if (!ArduinoConectado)
             {
                 lblDato.Visibility = Visibility.Hidden;
@@ -87,6 +101,7 @@ namespace CajaDeBateo.ControlDeUsuarios
         {
             data = (string)sender;
             lblDato.Dispatcher.Invoke(new Action(() => { lblDato.Content = data; }));
+            Dispatcher.Invoke(delegate { ObtenerDatos(false); });
         }
 
         private void BtnCancelarActualizar_Click(object sender, RoutedEventArgs e)
@@ -98,10 +113,8 @@ namespace CajaDeBateo.ControlDeUsuarios
         private void BtnBuscarActualizar_Click(object sender, RoutedEventArgs e)
         {
             ObtenerDatos(false);
-
             if (ArduinoConectado)
             {
-                lblDato.Content = "Pase la tarjeta";
                 BtnBuscarActualizar.IsEnabled = false;
                 try
                 {
@@ -128,46 +141,29 @@ namespace CajaDeBateo.ControlDeUsuarios
                 else
                     Arg = TlblDato.Text;
             }
-
+            IdActual = Arg;
             Limpiar();
-            List<String> Datos = baseDeDatos.ObtenerConCreditosDisponibles(Arg);
-            if (Datos.Count == 1 && Datos.ElementAt(0) == ".")
+            Tabla = new DataTable();
+            Tabla = baseDeDatos.ObtenerConCreditosDisponibles(Arg);
+            if (Tabla == null)
             {
                 MessageBox.Show("Error al realizar la consulta a la base de datos. Llame a soporte. ", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            else if (Datos.Count == 0)
+            else if (Tabla.Rows.Count == 0)
             {
                 MessageBox.Show("No se encontraron cargas de créditos para el usuario seleccionado.", "Sin resultados",
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
+            else if (Tabla.Rows.Count == 1 && Tabla.Rows[0][0].ToString() == "")
+            {
+                MessageBox.Show("El usuario no se encuentra registrado.", "Usuario inexistente",
+                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
             else
             {
-                Tabla = new DataTable();
-
-                Tabla.Columns.Add(new DataColumn("Tipo", typeof(String)));
-                Tabla.Columns.Add(new DataColumn("Fecha", typeof(String)));
-                Tabla.Columns.Add(new DataColumn("Vencimiento", typeof(String)));
-                Tabla.Columns.Add(new DataColumn("Creditos_Adquiridos", typeof(String)));
-                Tabla.Columns.Add(new DataColumn("Creditos_Disponibles", typeof(String)));
-
-                for (int i = 0; i < Datos.Count; i++)
-                {
-                    String Aux = Datos.ElementAt(i);
-                    String[] ListaAux = Aux.Split(new[] { '|' }, StringSplitOptions.None);
-
-                    DataRow Fila = Tabla.NewRow();
-                    for (int j = 0; j < ListaAux.Count(); j++)
-                    {
-                        Fila[j] = ListaAux[j];
-                    }
-                    Tabla.Rows.Add(Fila);
-                }
                 DataGridActualizar.ItemsSource = Tabla.DefaultView;
-                ContCalendarActualizar.Visibility = Visibility.Hidden;
-                DataGridActualizar.Visibility = Visibility.Visible;
-                //BtnGuardarActualizar.IsEnabled = false;
-                IdActual = Arg;
+                lblDato.Content = "Pase la tarjeta";
             }
         }
 
@@ -178,7 +174,6 @@ namespace CajaDeBateo.ControlDeUsuarios
             ContCalendarActualizar.Visibility = Visibility.Hidden;
             //BtnGuardarActualizar.IsEnabled = false;
             BtnBuscarActualizar.IsEnabled = true;
-            IdActual = "";
         }
 
         private void TlblDato_TextChanged(object sender, TextChangedEventArgs e)
@@ -227,18 +222,12 @@ namespace CajaDeBateo.ControlDeUsuarios
             DataGridActualizar.Visibility = Visibility.Visible;
             ContCalendarActualizar.Visibility = Visibility.Hidden;
             FechaSeleccionada = CalendarActualizar.SelectedDate.Value;
-            //BtnGuardarActualizar.IsEnabled = true;
             BtnCalendarAceptar.IsEnabled = false;
-
-            /*Verificar si la fecha de vencimiento del elemento ubicado en la fila FilaActual es
-            diferente a FechaSeleccionada. Si es así modificarlo en la base de datos*/
-            //d.Rows[0].Field<string>(3);
             baseDeDatos.ModificarFechaVencimiento(IdActual,
                 Tabla.Rows[FilaSeleccionada].Field<String>(1),
                 FechaSeleccionada.ToString("dd/MM/yyyy"),
                 Tabla.Rows[FilaSeleccionada].Field<String>(0));
             ObtenerDatos(true);
-
         }
 
         private void BtnCalendarCancelar_Click(object sender, RoutedEventArgs e)

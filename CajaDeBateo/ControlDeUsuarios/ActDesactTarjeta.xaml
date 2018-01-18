@@ -102,7 +102,7 @@
                     Margin="0,0,0,0"
                     FontFamily="Showcard Gothic" 
                     FontSize="16"
-                    IsEnabled="True"
+                    IsEnabled="False"
                     Click="BtnAccionActivarTarjeta_Click">
                 <StackPanel>
                     <Image Source="pack://application:,,,/Imagenes/Listo.png" Width="38"/>

@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Data;
+using System.Threading;
 
 namespace CajaDeBateo.ControlDeUsuarios
 {
@@ -57,6 +58,19 @@ namespace CajaDeBateo.ControlDeUsuarios
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 ArduinoConectado = false;
             }
+            finally
+            {
+                Thread.Sleep(2000);
+                try
+                {
+                    arduino.Write("2");
+                }
+                catch (Exception e)
+                {
+                    String Valor = e.Message;
+                }
+            }
+
             if (!ArduinoConectado)
             {
                 lblDato.Visibility = Visibility.Hidden;
@@ -88,6 +102,7 @@ namespace CajaDeBateo.ControlDeUsuarios
         {
             data = (string)sender;
             lblDato.Dispatcher.Invoke(new Action(() => { lblDato.Content = data; }));
+            Dispatcher.Invoke(ObtenerDatos);
         }
 
         private void BtnCancelarVerHistorial_Click(object sender, RoutedEventArgs e)
@@ -101,7 +116,6 @@ namespace CajaDeBateo.ControlDeUsuarios
             ObtenerDatos();
             if (ArduinoConectado)
             {
-                lblDato.Content = "Pase la tarjeta";
                 BtnBuscarVerHistorial.IsEnabled = false;
                 try
                 {
@@ -122,40 +136,31 @@ namespace CajaDeBateo.ControlDeUsuarios
             else
                 Arg = TlblDato.Text;
 
-            List<String> Datos = baseDeDatos.ObtenerHistorial(Arg);
-            if (Datos.Count == 1 && Datos.ElementAt(0) == ".")
+            DataTable Tabla = new DataTable();
+            Tabla = baseDeDatos.ObtenerHistorial(Arg);
+            if (Tabla == null)
             {
                 MessageBox.Show("Error al realizar la consulta a la base de datos. Llame a soporte. ", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            else if (Datos.Count == 0)
+            else if (Tabla.Rows.Count == 0)
             {
                 MessageBox.Show("No se encontraron cargas de créditos para el usuario seleccionado.", "Sin resultados",
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
+            else if (Tabla.Rows.Count == 1 && Tabla.Rows[0][0].ToString() == "")
+            {
+                MessageBox.Show("El usuario no se encuentra registrado.", "Usuario inexistente",
+                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
             else
             {
-                DataTable Tabla = new DataTable();
-
-                Tabla.Columns.Add(new DataColumn("Tipo", typeof(String)));
-                Tabla.Columns.Add(new DataColumn("Fecha", typeof(String)));
-                Tabla.Columns.Add(new DataColumn("Vencimiento", typeof(String)));
-                Tabla.Columns.Add(new DataColumn("Créditos Adquiridos", typeof(String)));
-                Tabla.Columns.Add(new DataColumn("Créditos Disponibles", typeof(String)));
-
-                for (int i = 0; i < Datos.Count; i++)
-                {
-                    String Aux = Datos.ElementAt(i);
-                    String[] ListaAux = Aux.Split(new[] { '|' }, StringSplitOptions.None);
-
-                    DataRow Fila = Tabla.NewRow();
-                    for (int j = 0; j < ListaAux.Count(); j++)
-                    {
-                        Fila[j] = ListaAux[j];
-                    }
-                    Tabla.Rows.Add(Fila);
-                }
                 DataGridHistorial.ItemsSource = Tabla.DefaultView;
+                lblDato.Content = "Pase la tarjeta";
+                for (int i = 0; i < DataGridHistorial.Columns.Count; i++)
+                {
+                    //DataGridHistorial.Columns[i].Width = 20'*';
+                }
             }
         }
 

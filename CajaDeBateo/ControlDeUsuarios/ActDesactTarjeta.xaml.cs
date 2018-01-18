@@ -40,7 +40,6 @@ namespace CajaDeBateo.ControlDeUsuarios
                 arduino = new ArduinoComunication(puerto, puertos);
                 arduino.RespuestaRecivida += new EventHandler(Read);
                 aux = lblDato;
-                arduino.Write("2");
                 lblDato.Content = "Pase la tarjeta";
             }
             catch (SensorNotFoundExceptio e)
@@ -52,6 +51,11 @@ namespace CajaDeBateo.ControlDeUsuarios
             {
                 MessageBox.Show("Error. Conección con lectora/escritora no encontrada." + e.Message,
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                Thread.Sleep(2000);
+                arduino.Write("2");
             }
             this.IsVisibleChanged += ActDesactTarjeta_IsVisibleChanged;
         }
@@ -80,6 +84,7 @@ namespace CajaDeBateo.ControlDeUsuarios
         {
             data = (string)sender;
             lblDato.Dispatcher.Invoke(new Action(() => { lblDato.Content = data; }));
+            BtnAccionActDesactTarjeta.Dispatcher.Invoke(new Action(() => { BtnAccionActDesactTarjeta.IsEnabled = true; }));
         }
 
         private void BtnCancelarActDesactTarjeta_Click(object sender, RoutedEventArgs e)
@@ -93,7 +98,7 @@ namespace CajaDeBateo.ControlDeUsuarios
             String Arg = lblDato.Content.ToString();
             int Resp = baseDeDatos.ActDesactTarjeta(Arg, TipoDeAccion);
             String Aux = "";
-            if (TipoDeAccion == 0)
+            if (TipoDeAccion == 1)
                 Aux = "activada";
             else
                 Aux = "desactivada";
@@ -113,6 +118,9 @@ namespace CajaDeBateo.ControlDeUsuarios
                 MessageBox.Show("Tarjeta " + Aux + " con éxito.", "Éxito",
                     MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
+
+            lblDato.Content = "Pase la tarjeta";
+            BtnAccionActDesactTarjeta.IsEnabled = false;
         }
     }
 }

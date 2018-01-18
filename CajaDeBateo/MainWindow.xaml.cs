@@ -219,7 +219,8 @@ namespace CajaDeBateo
                     stkUSerControlContainer.Children.Add(controlDeVista);
                     break;
                 case "btnRespaldoBD":
-                    DBConnect.Backup();
+                    DBConnect backup = new DBConnect();
+                    backup.Backup();
                     break;
                 case "btnConfigurarCreditosMensuales":
                     stkUSerControlContainer.Children.Remove(controlDeVista);
